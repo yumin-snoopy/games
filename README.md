@@ -10,13 +10,13 @@
 
 ブラウザで遊べるテトリスです。
 
-[テトリスを開く](./テトリス/index.html)
+[テトリスを遊ぶ](https://yumin-snoopy.github.io/games/テトリス/)
 
 ### オセロ
 
 ブラウザで遊べるオセロです。
 
-[オセロを開く](./オセロ/index.html)
+[オセロを遊ぶ](https://yumin-snoopy.github.io/games/オセロ/)
 
 ## フォルダ構成
 
