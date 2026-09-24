@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>オセロ（リバーシ）</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel">
+      <h1>オセロ（リバーシ）</h1>
+      <div class="row">
+        <label for="depth">CPU強さ：</label>
+        <select id="depth">
+          <option value="1">レベル1（弱い）</option>
+          <option value="2">レベル2</option>
+          <option value="3" selected>レベル3（標準）</option>
+          <option value="4">レベル4</option>
+          <option value="5">レベル5（強い）</option>
+        </select>
+      </div>
+      <div class="row">
+        <label for="theme">駒デザイン：</label>
+        <select id="theme">
+          <option value="classic" selected>クラシック（黒と白）</option>
+          <option value="fruits1">フルーツ（りんごとバナナ）</option>
+          <option value="fruits2">フルーツ（キウイとぶどう）</option>
+          <option value="animals1">どうぶつ（いぬとぶた）</option>
+          <option value="animals2">どうぶつ（うしとカエル）</option>
+          <option value="birds">とり（ぺんぎんとひよこ）</option>
+          <option value="wagashi">わがし（だんごとおちゃ）</option>
+        </select>
+      </div>
+      <div class="row">
+        <label for="boardTheme">盤面カラー：</label>
+        <select id="boardTheme">
+          <option value="classic" selected>クラシック（深緑）</option>
+          <option value="forest">フォレスト</option>
+          <option value="ocean">オーシャン</option>
+          <option value="cafe">カフェ</option>
+          <option value="lavender">ラベンダー</option>
+          <option value="mono">モノトーン</option>
+        </select>
+      </div>
+      <div class="row column">
+        <div class="row">
+          <label>モード：</label>
+          <select id="mode">
+            <option value="pvp">人間同士</option>
+            <option value="cpu" selected>人間 vs CPU</option>
+          </select>
+        </div>
+        <div class="row">
+          <label>駒：</label>
+          <select id="humanColor" title="あなたが使う駒の色（CPUの駒は自動的に相手の色になります）">
+            <option value="black">黒</option>
+            <option value="white">白</option>
+          </select>
+          <label>先手：</label>
+          <select id="firstWho" title="どちらが先手で打つか">
+            <option value="human" selected>あなたが先手</option>
+            <option value="cpu">CPUが先手</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <button class="primary" id="newgame">新規対局</button>
+        <button id="hintBtn" title="次の一手をおすすめ（Jキー）" disabled>ヒント</button>
+        <button class="pass" id="pass" disabled>パス</button>
+        <button class="danger" id="giveup" disabled>投了</button>
+      </div>
+      <div class="stats">
+        <div class="card"><h3>手番</h3><div id="turnText">黒の番</div></div>
+        <div class="card"><h3>スコア</h3><div><span class="num" id="scoreBlack">2</span> <span id="labelBlack">黒</span> / <span class="num" id="scoreWhite">2</span> <span id="labelWhite">白</span></div></div>
+        <div class="card"><h3>合法手</h3><div class="num" id="legalCount">4</div></div>
+        <div class="card"><h3>状態</h3><div id="status">対局開始できます</div></div>
+      </div>
+      <div class="sep"></div>
+      <div class="mini">ログ</div>
+      <div class="log" id="log"></div>
+    </div>
+
+    <div class="panel">
+      <div id="board" class="board" aria-label="オセロ盤面" role="grid"></div>
+    </div>
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
