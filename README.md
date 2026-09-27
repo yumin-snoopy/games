@@ -18,10 +18,25 @@
 
 [オセロを遊ぶ](https://yumin-snoopy.github.io/games/オセロ/)
 
+### ことりマージ
+
+鳥を落として、同じ鳥をくっつけながら10種類の鳥を育てるオリジナル物理マージゲームです。
+マウス・キーボード・スマートフォンで遊べます。ハイスコアはブラウザに保存されます。
+
+[ことりマージを遊ぶ](https://yumin-snoopy.github.io/games/bird_merge/)
+
+ファイル：`bird_merge/index.html`・`bird_merge/style.css`・`bird_merge/script.js`。
+物理演算には Matter.js 0.20.0（CDN）を使用しています。
+
 ## フォルダ構成
 
 ```text
 games
+├─ bird_merge
+│  ├─ index.html
+│  ├─ style.css
+│  └─ script.js
+│
 ├─ テトリス
 │  ├─ index.html
 │  ├─ style.css
