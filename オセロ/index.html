@@ -1,15 +1,39 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
   <title>オセロ（リバーシ）</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="wrap">
-    <div class="panel">
-      <h1>オセロ（リバーシ）</h1>
+  <main class="wrap">
+    <section class="panel play-panel" aria-label="オセロゲーム">
+      <header class="game-header">
+        <div><a class="back-link" href="../">← ゲーム一覧</a><h1>オセロ（リバーシ）</h1></div>
+        <button class="primary" id="newgame" type="button">新規対局</button>
+      </header>
+      <div class="stats">
+        <div class="card"><h3>手番</h3><div id="turnText">黒の番</div></div>
+        <div class="card"><h3>スコア</h3><div><span class="num" id="scoreBlack">2</span> <span id="labelBlack">黒</span> / <span class="num" id="scoreWhite">2</span> <span id="labelWhite">白</span></div></div>
+        <div class="card"><h3>置ける場所</h3><div class="num" id="legalCount">4</div></div>
+        <div class="card"><h3>状態</h3><div id="status" role="status" aria-live="polite">対局開始できます</div></div>
+      </div>
+
+      <p class="board-guide" id="board-guide"><strong>黄色い枠のマスをタップ</strong>して石を置こう。</p>
+      <div id="board" class="board" aria-label="オセロ盤面" aria-describedby="board-guide" role="grid"></div>
+      <div class="game-actions" aria-label="対局操作">
+        <button id="hintBtn" type="button" title="次の一手をおすすめ（Jキー）" disabled>ヒント</button>
+        <button class="pass" id="pass" type="button" disabled>パス</button>
+        <button class="danger" id="giveup" type="button" disabled>投了</button>
+      </div>
+      <p class="action-note">迷ったら「ヒント」。置ける場所がないときは「パス」。</p>
+    </section>
+    <aside class="side-panel">
+      <details class="panel settings-panel">
+        <summary>対局の設定・デザイン <span>開く／閉じる</span></summary>
+        <p class="settings-note">モード・駒・先手を選んでから「新規対局」を押してください。</p>
       <div class="row">
         <label for="depth">CPU強さ：</label>
         <select id="depth">
@@ -45,47 +69,38 @@
       </div>
       <div class="row column">
         <div class="row">
-          <label>モード：</label>
+          <label for="mode">モード：</label>
           <select id="mode">
             <option value="pvp">人間同士</option>
             <option value="cpu" selected>人間 vs CPU</option>
           </select>
         </div>
         <div class="row">
-          <label>駒：</label>
+          <label for="humanColor">駒：</label>
           <select id="humanColor" title="あなたが使う駒の色（CPUの駒は自動的に相手の色になります）">
             <option value="black">黒</option>
             <option value="white">白</option>
           </select>
-          <label>先手：</label>
+          <label for="firstWho">先手：</label>
           <select id="firstWho" title="どちらが先手で打つか">
             <option value="human" selected>あなたが先手</option>
             <option value="cpu">CPUが先手</option>
           </select>
         </div>
       </div>
-      <div class="row">
-        <button class="primary" id="newgame">新規対局</button>
-        <button id="hintBtn" title="次の一手をおすすめ（Jキー）" disabled>ヒント</button>
-        <button class="pass" id="pass" disabled>パス</button>
-        <button class="danger" id="giveup" disabled>投了</button>
-      </div>
-      <div class="stats">
-        <div class="card"><h3>手番</h3><div id="turnText">黒の番</div></div>
-        <div class="card"><h3>スコア</h3><div><span class="num" id="scoreBlack">2</span> <span id="labelBlack">黒</span> / <span class="num" id="scoreWhite">2</span> <span id="labelWhite">白</span></div></div>
-        <div class="card"><h3>合法手</h3><div class="num" id="legalCount">4</div></div>
-        <div class="card"><h3>状態</h3><div id="status">対局開始できます</div></div>
-      </div>
-      <div class="sep"></div>
-      <div class="mini">ログ</div>
-      <div class="log" id="log"></div>
-    </div>
 
-    <div class="panel">
-      <div id="board" class="board" aria-label="オセロ盤面" role="grid"></div>
-    </div>
-  </div>
-
+      </details>
+      <details class="panel">
+        <summary>対局ログ</summary>
+        <div class="log" id="log"></div>
+      </details>
+      <section class="panel how-to">
+        <h2>遊び方</h2>
+        <p>自分の石で相手の石をはさむと、自分の色にひっくり返せます。最後に石が多いほうの勝ち！</p>
+        <p>石のデザインや盤面の色は「対局の設定・デザイン」から変更できます。</p>
+      </section>
+    </aside>
+  </main>
   <script type="module" src="script.js"></script>
 </body>
 </html>
