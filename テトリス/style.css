@@ -4,141 +4,62 @@
   --panel: #1e293b;
   --accent: #38bdf8;
   --text: #e2e8f0;
-  --grid: rgba(148, 163, 184, 0.2);
   font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
-
-body {
-  margin: 0;
-  background: linear-gradient(160deg, #020617 0%, #0f172a 50%, #1d2537 100%);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text);
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; background: linear-gradient(160deg,#020617,#0f172a 50%,#1d2537); color: var(--text); }
+.layout { width: min(calc(100% - 32px),650px); margin: 24px auto; display: grid; grid-template-columns: minmax(0,300px) minmax(0,1fr); gap: 16px; justify-content: center; }
+.game-header { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+h1 { font-size: 24px; margin: 6px 0 0; }
+.back-link { color: #a8dff8; font-size: 13px; text-decoration: none; }
+button { font: inherit; font-weight: 700; cursor: pointer; border: 1px solid #52718c; border-radius: 12px; background: #243851; color: var(--text); touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+button:active, button.is-pressed { background: #38bdf8; color: #0f172a; }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+button:disabled { opacity: .5; cursor: default; }
+#pause-btn { min-height: 44px; padding: 8px 12px; font-size: 14px; white-space: nowrap; touch-action: manipulation; }
+.game-area { position: relative; border-radius: 12px; overflow: hidden; aspect-ratio: 1 / 2; width: 100%; align-self: start; box-shadow: 0 12px 30px #0003; }
+canvas#board { display: block; width: 100%; height: 100%; background: radial-gradient(circle at top, #38bdf81f, transparent 60%),var(--panel); }
+.overlay { position: absolute; inset: 0; background: #0f172ae8; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 16px; text-align: center; }
+.overlay.hidden { display: none; }
+.overlay h2 { font-size: 20px; line-height: 1.6; margin: 0; }
+.overlay button { padding: 12px 20px; font-size: 16px; background: var(--accent); color: #0f172a; touch-action: manipulation; }
+.info-panel { min-width: 0; display: flex; flex-direction: column; gap: 14px; align-self: start; padding: 16px; background: #0f172a99; border-radius: 16px; }
+.stats { margin: 0; display: grid; gap: 12px; }
+.stats div { text-align: center; min-width: 0; }
+.stats dt { font-size: 13px; color: #b3c0d0; }
+.stats dd { margin: 4px 0 0; font-size: 24px; font-weight: 700; overflow-wrap: anywhere; }
+.next,.hold { text-align: center; background: #0e1e3cb3; padding: 12px; border-radius: 12px; min-width: 0; }
+.next h2,.hold h2 { font-size: 14px; margin: 0 0 8px; }
+canvas#next,canvas#hold { display: block; width: min(100%,120px); height: auto; margin: 0 auto; background: #0f172a99; border-radius: 8px; }
+.touch-controls { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
+.touch-controls button { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 54px; padding: 8px 4px; }
+.touch-controls b { font-size: 26px; line-height: 1; }
+.touch-controls span { font-size: 15px; }
+.touch-controls small { font-size: 11px; font-weight: 400; }
+.touch-controls button[data-action="hold"],.touch-controls .drop-button { flex-direction: column; gap: 2px; }
+.drop-button { background: #344458; border-color: #8290a1; }
+.instructions { grid-column: 1 / -1; color: #c0ccdc; font-size: 14px; line-height: 1.7; }
+.instructions p { margin: 0 0 8px; }
+@media (max-width: 767px) {
+  .layout { width: calc(100% - 20px); margin: 10px auto; gap: 10px; grid-template-columns: minmax(0,min(300px,calc((100svh - 240px) / 2))) minmax(78px,100px); }
+  h1 { font-size: 19px; margin-top: 4px; }
+  .back-link { font-size: 12px; }
+  .info-panel { padding: 8px 6px; gap: 10px; border-radius: 12px; }
+  .stats { gap: 8px; }
+  .stats dt { font-size: 12px; }
+  .stats dd { font-size: 18px; margin-top: 2px; }
+  .next,.hold { padding: 7px 3px; border-radius: 8px; }
+  .next h2,.hold h2 { font-size: 11px; margin-bottom: 4px; }
+  canvas#next,canvas#hold { width: min(100%,56px); }
+  .touch-controls { gap: 6px; }
+  .touch-controls button { min-height: 50px; }
+  .touch-controls span { font-size: 14px; }
+  .instructions { font-size: 13px; }
 }
-
-.layout {
-  display: grid;
-  gap: 2rem;
-  padding: 2rem;
-  max-width: 900px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-@media (min-width: 768px) {
-  .layout {
-    grid-template-columns: 2fr 1fr;
-  }
-}
-
-.game-area {
-  position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.6);
-}
-
-canvas#board {
-  display: block;
-  width: 100%;
-  background: radial-gradient(circle at top, rgba(56, 189, 248, 0.12), transparent 60%),
-    var(--panel);
-}
-
-.overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.9);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  backdrop-filter: blur(4px);
-}
-
-.overlay.hidden {
-  display: none;
-}
-
-.overlay button {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  border-radius: 999px;
-  border: none;
-  background: var(--accent);
-  color: #0f172a;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.overlay button:hover {
-  transform: translateY(-2px);
-}
-
-.info-panel {
-  background: rgba(15, 23, 42, 0.6);
-  border-radius: 24px;
-  padding: 1.5rem;
-  display: grid;
-  gap: 1.5rem;
-  box-shadow: inset 0 1px 0 rgba(148, 163, 184, 0.1), 0 20px 50px rgba(15, 23, 42, 0.45);
-}
-
-.info-panel h1 {
-  margin: 0;
-  font-size: 1.8rem;
-  letter-spacing: 0.08em;
-}
-
-.stats {
-  display: flex;
-  justify-content: space-between;
-  margin: 0;
-  padding: 1rem;
-  border-radius: 16px;
-  background: rgba(14, 30, 60, 0.7);
-}
-
-.stats div {
-  text-align: center;
-}
-
-.stats dt {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: rgba(226, 232, 240, 0.7);
-}
-
-.stats dd {
-  margin: 0;
-  font-size: 1.4rem;
-  font-weight: 700;
-}
-
-.next,
-.hold {
-  background: rgba(14, 30, 60, 0.7);
-  padding: 1rem;
-  border-radius: 16px;
-}
-
-canvas#next,
-canvas#hold {
-  display: block;
-  margin: 0 auto;
-  background: rgba(15, 23, 42, 0.6);
-  border-radius: 12px;
-}
-
-canvas#board::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.18);
-  pointer-events: none;
+@media (max-height: 500px) and (orientation: landscape) {
+  .layout { width: min(calc(100% - 20px),700px); grid-template-columns: minmax(0,160px) minmax(78px,100px) minmax(0,240px); gap: 10px; margin: 8px auto; }
+  .game-area { width: min(100%,calc((100svh - 80px) / 2)); }
+  .touch-controls { grid-column: 3; grid-row: 2; align-self: center; }
+  .touch-controls button { flex-direction: column; min-height: 64px; gap: 4px; }
+  .instructions { grid-column: 1 / -1; }
 }

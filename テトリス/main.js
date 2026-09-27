@@ -73,6 +73,9 @@ let dropCounter = 0;
 let dropInterval = DROP_BASE;
 let lastTime = 0;
 let animationId;
+let running = false;
+let paused = false;
+const pauseButton = document.getElementById('pause-btn');
 
 const player = {
   pos: { x: 0, y: 0 },
@@ -252,6 +255,7 @@ function playerMove(dir) {
 }
 
 function update(time = 0) {
+  if (!running || paused) return;
   const delta = time - lastTime;
   lastTime = time;
   dropCounter += delta;
@@ -259,7 +263,7 @@ function update(time = 0) {
     playerDrop();
   }
   draw();
-  animationId = requestAnimationFrame(update);
+  if (running && !paused) animationId = requestAnimationFrame(update);
 }
 
 function resetBoard() {
@@ -335,46 +339,94 @@ function updateScore() {
   levelEl.textContent = player.level + 1;
 }
 
+function performAction(action) {
+  if (!running || paused) return;
+  const actions = {
+    left: () => playerMove(-1),
+    right: () => playerMove(1),
+    down: playerDrop,
+    rotate: () => playerRotate(1),
+    reverse: () => playerRotate(-1),
+    drop: hardDrop,
+    hold,
+  };
+  if (actions[action]) { actions[action](); draw(); }
+}
+
+function togglePause() {
+  if (!running) return;
+  paused = !paused;
+  stopRepeats();
+  pauseButton.textContent = paused ? '再開' : '一時停止';
+  overlay.classList.toggle('hidden', !paused);
+  if (paused) {
+    cancelAnimationFrame(animationId);
+    stateMessage.textContent = '一時停止中';
+    startButton.textContent = '再開';
+  } else {
+    lastTime = performance.now();
+    animationId = requestAnimationFrame(update);
+  }
+}
+
+const repeatStops = new Set();
+function stopRepeats() {
+  repeatStops.forEach(stop => stop());
+}
+
 function setupControls() {
-  document.addEventListener('keydown', (event) => {
-    if (overlay.classList.contains('hidden')) {
-      switch (event.code) {
-        case 'ArrowLeft':
-          event.preventDefault();
-          playerMove(-1);
-          break;
-        case 'ArrowRight':
-          event.preventDefault();
-          playerMove(1);
-          break;
-        case 'ArrowDown':
-          event.preventDefault();
-          playerDrop();
-          break;
-        case 'ArrowUp':
-          event.preventDefault();
-          playerRotate(1);
-          break;
-        case 'KeyZ':
-          event.preventDefault();
-          playerRotate(-1);
-          break;
-        case 'Space':
-          event.preventDefault();
-          hardDrop();
-          break;
-        case 'KeyC':
-          event.preventDefault();
-          hold();
-          break;
-        default:
-          break;
-      }
-    }
+  const keys = { ArrowLeft: 'left', ArrowRight: 'right', ArrowDown: 'down', ArrowUp: 'rotate', KeyZ: 'reverse', Space: 'drop', KeyC: 'hold' };
+  document.addEventListener('keydown', event => {
+    if (event.ctrlKey || event.metaKey || event.altKey || event.target.matches('input,textarea,select,[contenteditable="true"]')) return;
+    if (event.code === 'KeyP') { event.preventDefault(); if (!event.repeat) togglePause(); return; }
+    if (!running || paused || !keys[event.code]) return;
+    event.preventDefault();
+    performAction(keys[event.code]);
   });
+  document.querySelectorAll('[data-action]').forEach(button => {
+    const action = button.dataset.action;
+    const repeatable = ['left','right','down'].includes(action);
+    let delay, interval, suppressClick = false;
+    function stop() {
+      clearTimeout(delay);
+      clearInterval(interval);
+      button.classList.remove('is-pressed');
+    }
+    repeatStops.add(stop);
+    if (repeatable) {
+      button.addEventListener('pointerdown', event => {
+        if (!event.isPrimary || event.button !== 0) return;
+        stop();
+        suppressClick = true;
+        event.preventDefault();
+        button.setPointerCapture(event.pointerId);
+        button.classList.add('is-pressed');
+        performAction(action);
+        delay = setTimeout(() => { interval = setInterval(() => performAction(action), 90); }, 260);
+      });
+      button.addEventListener('pointerup', stop);
+      button.addEventListener('pointercancel', () => { stop(); suppressClick = false; });
+      button.addEventListener('lostpointercapture', stop);
+    }
+    button.addEventListener('click', () => {
+      if (suppressClick) { suppressClick = false; return; }
+      performAction(action);
+      button.classList.add('is-pressed');
+      setTimeout(() => button.classList.remove('is-pressed'), 160);
+    });
+    button.addEventListener('contextmenu', event => event.preventDefault());
+  });
+  pauseButton.addEventListener('click', togglePause);
+  window.addEventListener('blur', () => { stopRepeats(); if (running && !paused) togglePause(); });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) { stopRepeats(); if (running && !paused) togglePause(); } });
 }
 
 function startGame() {
+  stopRepeats();
+  running = true;
+  paused = false;
+  pauseButton.disabled = false;
+  pauseButton.textContent = '一時停止';
   overlay.classList.add('hidden');
   cancelAnimationFrame(animationId);
   resetBoard();
@@ -387,13 +439,17 @@ function startGame() {
   playerReset();
   updateScore();
   dropInterval = DROP_BASE;
-  lastTime = 0;
+  lastTime = performance.now();
   dropCounter = 0;
   updatePreview();
-  update();
+  update(lastTime);
 }
 
 function gameOver() {
+  running = false;
+  paused = false;
+  stopRepeats();
+  pauseButton.disabled = true;
   cancelAnimationFrame(animationId);
   overlay.classList.remove('hidden');
   stateMessage.textContent = `ゲームオーバー! スコア: ${player.score}`;
@@ -401,6 +457,7 @@ function gameOver() {
 }
 
 startButton.addEventListener('click', () => {
+  if (running && paused) { togglePause(); return; }
   stateMessage.textContent = '準備完了';
   startButton.textContent = 'スタート';
   startGame();
