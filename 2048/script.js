@@ -2,6 +2,8 @@
 
 const SIZE = 4;
 const BEST_KEY = "games-2048-best";
+const GUIDE_KEY = "games-2048-guide-seen";
+const firstGuide = document.getElementById("first-guide");
 const boardElement = document.getElementById("board");
 const scoreElement = document.getElementById("score");
 const bestElement = document.getElementById("best");
@@ -85,7 +87,7 @@ function canMove() {
 }
 
 function move(direction) {
-  if (paused || gameOver || !["left", "right", "up", "down"].includes(direction)) return;
+  if (firstGuide.open || paused || gameOver || !["left", "right", "up", "down"].includes(direction)) return;
   let changed = false;
   let gained = 0;
   const mergedCells = [];
@@ -197,7 +199,13 @@ continueButton.addEventListener("click", () => {
   boardElement.focus({ preventScroll: true });
 });
 document.querySelectorAll("[data-direction]").forEach(button => {
-  button.addEventListener("click", () => move(button.dataset.direction));
+  let feedbackTimer;
+  button.addEventListener("click", () => {
+    button.classList.add("is-pressed");
+    clearTimeout(feedbackTimer);
+    feedbackTimer = setTimeout(() => button.classList.remove("is-pressed"), 180);
+    move(button.dataset.direction);
+  });
 });
 document.addEventListener("keydown", event => {
   const directions = { ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right" };
@@ -223,3 +231,16 @@ boardElement.addEventListener("pointerup", event => {
 });
 boardElement.addEventListener("pointercancel", () => { touchStart = null; });
 newGame();
+
+// 初回ガイドの既読情報はベストスコアとは別のキーで保存する。
+document.getElementById("start-game").addEventListener("click", () => {
+  try { localStorage.setItem(GUIDE_KEY, "1"); } catch {
+    // 保存できない場合も、今回のガイドは閉じて遊べる。
+  }
+  firstGuide.close();
+  boardElement.focus({ preventScroll: true });
+});
+firstGuide.addEventListener("cancel", event => event.preventDefault());
+let guideSeen = false;
+try { guideSeen = localStorage.getItem(GUIDE_KEY) === "1"; } catch {}
+if (!guideSeen) firstGuide.showModal();

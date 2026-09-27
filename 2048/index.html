@@ -19,9 +19,18 @@
       </div>
     </header>
     <div class="toolbar"><p>小さな <b>2</b> から、大きな <b>2048</b> へ。</p><button id="new-game" class="primary" type="button">新しいゲーム</button></div>
+    <section class="operation-guide" aria-labelledby="operation-title">
+      <h2 id="operation-title">数字は、みんな一緒に動きます</h2>
+      <p class="operation-main">矢印キーを押すと、すべての数字がその方向へ一斉に動きます</p>
+      <ul class="key-guide" aria-label="矢印キーの方向">
+        <li><b>↑</b> 上へ</li><li><b>↓</b> 下へ</li><li><b>←</b> 左へ</li><li><b>→</b> 右へ</li>
+      </ul>
+      <p class="operation-note">数字を1つずつ動かすのではなく、盤面にあるすべての数字が同時に動きます。</p>
+      <p class="operation-note">画面の矢印ボタンや、盤面のスワイプでも動かせます。</p>
+    </section>
     <p id="status" class="status" role="status" aria-live="polite">同じ数字をくっつけてみよう！</p>
     <section class="board-wrap" aria-label="2048ゲーム">
-      <div id="board" class="board" role="grid" aria-label="4×4のゲーム盤" tabindex="0" aria-describedby="instructions"></div>
+      <div id="board" class="board" role="grid" aria-label="4×4のゲーム盤" tabindex="0" aria-describedby="operation-title instructions"></div>
       <div id="overlay" class="overlay" hidden>
         <div class="result-card">
           <p class="result-symbol" aria-hidden="true">✦</p>
@@ -41,8 +50,20 @@
     <p class="control-hint">矢印キー・スワイプ・ボタンで操作</p>
     <section class="instructions" id="instructions">
       <h2>あそびかた</h2>
-      <p>同じ数字をくっつけて、大きな数字を作るゲームです。矢印キーやボタン、盤面のスワイプで数字を動かし、<strong>2048</strong>を目指しましょう！</p>
-      <div class="merge-example" aria-label="2と2を合体すると4"><span>2</span><b>＋</b><span>2</span><b>→</b><span class="example-four">4</span></div>
+      <p>同じ数字をくっつけて、大きな数字を作るゲームです。</p>
+      <p>矢印キーや画面上の矢印ボタンを押すと、すべての数字がその方向へ一斉に動きます。</p>
+      <p>同じ数字どうしがぶつかると合体します。</p>
+      <p><strong>2 → 4 → 8 → 16 → …</strong> と数字を大きくして、<strong>2048</strong>を目指しましょう！</p>
+      <figure class="move-example" aria-labelledby="example-title">
+        <figcaption id="example-title">左へ動かしてみよう</figcaption>
+        <p class="example-label">移動前</p>
+        <div class="example-row" aria-label="移動前：2、2、4、8"><span class="tile-2">2</span><span class="tile-2">2</span><span class="tile-4">4</span><span class="tile-8">8</span></div>
+        <p class="example-action"><b>←</b> キーを押す<br><span>すべての数字が左へ！</span></p>
+        <p class="example-label">移動後</p>
+        <div class="example-row" aria-label="移動後：4、4、8、空き"><span class="tile-4 example-merged">4</span><span class="tile-4">4</span><span class="tile-8">8</span><span class="example-empty" aria-label="空きマス">□</span></div>
+        <p class="example-caption">同じ数字がぶつかると合体します<br><strong>2 ＋ 2 → 4</strong></p>
+        <p class="example-footnote">図は合体直後の様子です。実際のゲームでは、このあと空いたマスに2か4が1個現れます。</p>
+      </figure>
       <ul>
         <li>数字は選んだ方向にまとめて動きます。同じ数字がぶつかると合体し、できた数字がスコアに加わります。</li>
         <li>盤面が動くたびに、空いたマスに2か4が1個現れます。動かせない方向を押しても増えません。</li>
@@ -50,7 +71,18 @@
       </ul>
       <p class="tip">ヒント：大きな数字をすみに集めてみよう。</p>
     </section>
-    <footer>ひとつずつ、2048を目指そう。</footer>
+    <footer>数字をくっつけて、2048を目指そう。</footer>
   </main>
+  <dialog id="first-guide" class="first-guide" aria-labelledby="first-guide-title" aria-describedby="first-guide-description">
+    <p class="eyebrow">はじめての2048</p>
+    <h2 id="first-guide-title">まずは、ここだけ覚えよう</h2>
+    <ul id="first-guide-description">
+      <li><strong>矢印キーで操作</strong><br>画面のボタン・スワイプでもOK</li>
+      <li><strong>全部の数字が同時に動く</strong></li>
+      <li><strong>同じ数字がぶつかると合体</strong><br>2 ＋ 2 → 4</li>
+      <li><strong>2048を目指す</strong></li>
+    </ul>
+    <button id="start-game" class="primary" type="button" autofocus>ゲームを始める</button>
+  </dialog>
 </body>
 </html>
