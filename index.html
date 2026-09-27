@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#faf7ef">
-  <meta name="description" content="テトリス・オセロ・2048をブラウザで楽しめるゲーム一覧です。好きなゲームを選んで遊ぼう！">
+  <meta name="description" content="テトリス・オセロ・2048・ことりマージをブラウザで楽しめるゲーム一覧です。好きなゲームを選んで遊ぼう！">
   <title>ゲームひろば | Games</title>
   <style>
     * { box-sizing: border-box; }
@@ -20,6 +20,7 @@
     .tetris { background: #e9e4f5; }
     .othello { background: #e2eee4; }
     .numbers { background: #f6ead3; }
+    .birds { background: linear-gradient(135deg, #e5f3f7, #fce5ed); }
     svg { width: 120px; height: 120px; }
     .number-tiles { display: grid; grid-template-columns: repeat(2, 50px); gap: 7px; transform: rotate(-6deg); }
     .number-tiles span { display: grid; place-items: center; width: 50px; height: 50px; border-radius: 9px; font-size: 24px; font-weight: 800; background: #faf1df; }
@@ -82,6 +83,25 @@
         <h2>2048</h2>
         <p class="description">同じ数字をくっつけて、大きな数字を作ろう。矢印キー・スワイプ・ボタンで2048に挑戦！</p>
         <a class="play" href="./2048/" aria-label="2048で遊ぶ">遊ぶ <span aria-hidden="true">→</span></a>
+      </article>
+      <article class="card">
+        <div class="preview birds" aria-hidden="true">
+          <svg viewBox="0 0 120 120" fill="none">
+            <circle cx="60" cy="62" r="43" fill="#fffaf7" stroke="#ddd7e0" stroke-width="2"/>
+            <ellipse cx="33" cy="72" rx="10" ry="17" fill="#e6d9e4"/>
+            <ellipse cx="87" cy="72" rx="10" ry="17" fill="#e6d9e4"/>
+            <ellipse cx="42" cy="70" rx="8" ry="4" fill="#f4cbd9"/>
+            <ellipse cx="78" cy="70" rx="8" ry="4" fill="#f4cbd9"/>
+            <ellipse cx="60" cy="83" rx="14" ry="9" fill="#ffedf3"/>
+            <ellipse cx="48" cy="56" rx="3" ry="4" fill="#344753"/>
+            <ellipse cx="72" cy="56" rx="3" ry="4" fill="#344753"/>
+            <path d="M56 63H64L60 70Z" fill="#6d6670"/>
+            <path d="M103 15V27M97 21H109" stroke="#dfa1b8" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h2>ことりマージ</h2>
+        <p class="description">鳥を落として、同じ鳥をくっつけよう。ひよこからワシまで、かわいい鳥を大きく育てよう！</p>
+        <a class="play" href="./bird_merge/" aria-label="ことりマージで遊ぶ">遊ぶ <span aria-hidden="true">→</span></a>
       </article>
     </section>
     <p class="note">ダウンロード不要。ブラウザでそのまま遊べます。<br>操作方法は、それぞれのゲーム画面をご覧ください。</p>
