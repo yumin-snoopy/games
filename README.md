@@ -2,7 +2,7 @@
 
 ブラウザで遊べるミニゲームをまとめたリポジトリです。
 
-現在は、テトリスとオセロを収録しています。
+テトリス・オセロ・2048・ことりマージ・とりとり大作戦を収録しています。
 
 ## ゲーム一覧
 
@@ -28,10 +28,31 @@
 ファイル：`bird_merge/index.html`・`bird_merge/style.css`・`bird_merge/script.js`。
 物理演算には Matter.js 0.20.0（CDN）を使用しています。
 
+### とりとり大作戦
+
+エサをためて、すずめ・ふくろう・わしを出撃させるオリジナルのラインディフェンスゲームです。
+PC・スマートフォンで1ステージを最後まで遊べます。HTML / CSS / JavaScriptのみで動作します。
+
+[とりとり大作戦を遊ぶ](https://yumin-snoopy.github.io/games/bird_battle/)
+
+操作方法・設定・ファイル構成は [bird_battle/README.md](bird_battle/README.md) をご覧ください。
+
 ## フォルダ構成
 
 ```text
 games
+├─ bird_battle
+│  ├─ index.html
+│  ├─ style.css
+│  ├─ script.js
+│  ├─ images/
+│  └─ README.md
+│
+├─ 2048
+│  ├─ index.html
+│  ├─ style.css
+│  └─ script.js
+│
 ├─ bird_merge
 │  ├─ index.html
 │  ├─ style.css
@@ -54,5 +75,4 @@ games
 
 必要に応じて、新しいゲームをこのリポジトリ内に追加していきます。
 
-将来的には、リポジトリ直下に `index.html` を作成し、
-ゲーム一覧から各ゲームを直接開けるトップページにする予定です。
+リポジトリ直下の `index.html` のゲーム一覧から、各ゲームを直接開けます。

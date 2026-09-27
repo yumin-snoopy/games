@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f5e9">
+  <meta name="description" content="エサをためて鳥たちを出撃！草原で遊ぶオリジナルのラインディフェンスゲーム。">
+  <title>とりとり大作戦 | ゲームひろば</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <main>
+    <header class="page-header">
+      <a href="../" class="back">← ゲームひろば</a>
+      <span class="tag">鳥たちのラインディフェンス</span>
+    </header>
+    <div class="title-row">
+      <div><p class="eyebrow">BIRD BATTLE · STAGE 01</p><h1>とりとり<span>大作戦</span><i aria-hidden="true">🐦</i></h1><p class="subtitle">ちいさな翼で、草原の向こうへ。</p></div>
+      <div class="stage-label">🌼 はじまりの草原 <small>はじめての人向け · 約2〜5分</small></div>
+    </div>
+    <section class="game" aria-label="とりとり大作戦">
+      <div class="toolbar">
+        <div class="food"><span aria-hidden="true">🌾</span><div><small>エサ <span>毎秒 +17</span></small><strong id="food">160</strong><span class="food-max"> / 999</span></div></div>
+        <div class="time"><small>あそんだ時間</small><strong id="time">0:00</strong></div>
+        <button id="pause" class="quiet" disabled>一時停止</button>
+      </div>
+      <div class="nest-status">
+        <div><div class="hp-label"><strong>🌿 あなたの巣</strong><span id="player-hp-text">1600 / 1600</span></div><progress id="player-hp" max="1600" value="1600" aria-label="あなたの巣のHP"></progress></div>
+        <div class="enemy-hp"><div class="hp-label"><strong>🍂 相手の巣</strong><span id="enemy-hp-text">18000 / 18000</span></div><progress id="enemy-hp" max="18000" value="18000" aria-label="相手の巣のHP"></progress></div>
+      </div>
+      <div class="field">
+        <canvas id="battlefield" width="1200" height="440" role="img" aria-label="左の鳥たちと右の動物たちが草原で戦うゲーム画面">ゲーム画面の表示にはCanvas対応ブラウザが必要です。</canvas>
+        <div class="overlay" id="overlay">
+          <div class="dialog" role="dialog" aria-labelledby="dialog-title" aria-describedby="dialog-description">
+            <span class="dialog-icon" id="dialog-icon" aria-hidden="true">🐦 🌾 🦉</span>
+            <p class="eyebrow" id="dialog-caption">みんなで、巣を守ろう！</p>
+            <h2 id="dialog-title">鳥たち、出発の時間！</h2>
+            <p id="dialog-description">エサをためて、下のボタンで鳥を出撃。<br>鳥たちは自動で進んで、戦います。<br>右の巣のHPを0にしたら勝ち！</p>
+            <button id="dialog-action" class="primary">作戦スタート →</button>
+          </div>
+        </div>
+      </div>
+      <div class="battle-message" id="message" role="status" aria-live="polite">まずはすずめを出して、エサがたまったらふくろう・わしを！</div>
+      <div class="roster" id="roster" aria-label="鳥の出撃ボタン"></div>
+      <div class="game-footer"><span>鳥は自動で移動・攻撃します</span><span>キーボード：1 / 2 / 3 で出撃 · P で一時停止</span></div>
+    </section>
+    <section class="guide" aria-label="遊び方">
+      <div><span>01</span><h3>エサをためよう</h3><p>エサは時間とともに増えます。<br>相手を倒すと少しおまけ！</p></div>
+      <div><span>02</span><h3>鳥を送り出そう</h3><p>すずめで前線を支えながら、<br>ふくろう・わしを加えよう。</p></div>
+      <div><span>03</span><h3>相手の巣を目指そう</h3><p>自分の巣を守りつつ右へ。<br>相手の巣のHPが0で勝利！</p></div>
+    </section>
+    <footer>とりとり大作戦 · オリジナルのブラウザゲーム</footer>
+    <noscript>このゲームを遊ぶにはJavaScriptを有効にしてください。</noscript>
+  </main>
+</body>
+</html>
