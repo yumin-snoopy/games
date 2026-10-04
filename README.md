@@ -2,7 +2,7 @@
 
 ブラウザで遊べるミニゲームをまとめたリポジトリです。
 
-テトリス・オセロ・2048・ことりマージ・とりとり大作戦・Lights Outを収録しています。
+テトリス・オセロ・2048・ことりマージ・とりとり大作戦・Lights Out・Bird Match Puzzleを収録しています。
 
 ## ゲーム一覧
 
@@ -45,6 +45,14 @@ PC・スマートフォンで1ステージを最後まで遊べます。HTML / C
 
 遊び方と操作方法は [lights_out/README.md](lights_out/README.md) をご覧ください。
 
+### Bird Match Puzzle
+
+隣り合う鳥を交換して3羽以上そろえる8×8のパズルです。連鎖でスコアを伸ばせます。
+
+[Bird Match Puzzleを遊ぶ](https://yumin-snoopy.github.io/games/bird_match/)
+
+遊び方と操作方法は [bird_match/README.md](bird_match/README.md) をご覧ください。
+
 ## フォルダ構成
 
 ```text
@@ -65,6 +73,12 @@ games
 │  ├─ index.html
 │  ├─ style.css
 │  └─ script.js
+│
+├─ bird_match
+│  ├─ index.html
+│  ├─ style.css
+│  ├─ script.js
+│  └─ README.md
 │
 ├─ lights_out
 │  ├─ index.html
