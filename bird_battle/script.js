@@ -1,322 +1,39 @@
-"use strict";
-
-// キャラクターの追加・調整はここで行います。imageに画像パスを指定すると絵文字から切り替わります。
-const BIRDS = {
-  sparrow: { name: "すずめ", icon: "🐦", image: null, hp: 65, attack: 12, speed: 85, interval: 1, cost: 50, cooldown: 4, size: 40, description: "すばやい先発隊" },
-  owl: { name: "ふくろう", icon: "🦉", image: null, hp: 200, attack: 25, speed: 48, interval: 1.35, cost: 100, cooldown: 7, size: 50, description: "頼れるバランス型" },
-  eagle: { name: "わし", icon: "🦅", image: null, hp: 520, attack: 62, speed: 30, interval: 1.9, cost: 200, cooldown: 12, size: 64, description: "ゆっくり、力強く" }
-};
-const ENEMIES = {
-  mouse: { name: "ネズミ", icon: "🐭", image: null, hp: 70, attack: 9, speed: 42, interval: 1.3, reward: 10, size: 38 },
-  snake: { name: "ヘビ", icon: "🐍", image: null, hp: 140, attack: 17, speed: 33, interval: 1.6, reward: 15, size: 44 },
-  fox: { name: "キツネ", icon: "🦊", image: null, hp: 300, attack: 29, speed: 28, interval: 1.8, reward: 25, size: 54 }
-};
-const SETTINGS = {
-  width: 1200, height: 440, playerX: 90, enemyX: 1110,
-  playerHp: 1600, enemyHp: 18000, initialFood: 160, foodRate: 17, maxFood: 999,
-  range: 48, maxAllies: 18, maxEnemies: 16, waveEnd: 150
-};
-
-class Unit {
-  constructor(id, kind, side) {
-    this.id = id;
-    this.kind = kind;
-    this.side = side;
-    this.config = (side === "player" ? BIRDS : ENEMIES)[kind];
-    this.hp = this.config.hp;
-    this.x = side === "player" ? SETTINGS.playerX + 32 : SETTINGS.enemyX - 32;
-    this.attackTimer = 0.35;
-    this.attacking = false;
-    this.flash = 0;
-  }
-}
-
-// ゲーム状態と戦闘を描画から分離。秒単位の固定ステップで端末の速度による差を防ぎます。
-class Battle {
-  constructor() { this.reset(); }
-  reset() {
-    this.status = "ready";
-    this.time = 0;
-    this.food = SETTINGS.initialFood;
-    this.playerHp = SETTINGS.playerHp;
-    this.enemyHp = SETTINGS.enemyHp;
-    this.units = [];
-    this.cooldowns = Object.fromEntries(Object.keys(BIRDS).map(key => [key, 0]));
-    this.nextEnemy = 7;
-    this.wave = 0;
-    this.nextId = 1;
-    this.defeated = 0;
-    this.deployed = 0;
-    this.effects = [];
-  }
-  start() { if (this.status === "ready") this.status = "playing"; }
-  canDeploy(kind) {
-    return !!BIRDS[kind] && this.status === "playing" && this.food >= BIRDS[kind].cost &&
-      this.cooldowns[kind] <= 0 && this.units.filter(unit => unit.side === "player").length < SETTINGS.maxAllies;
-  }
-  deploy(kind) {
-    if (!this.canDeploy(kind)) return false;
-    this.food -= BIRDS[kind].cost;
-    this.cooldowns[kind] = BIRDS[kind].cooldown;
-    this.units.push(new Unit(this.nextId++, kind, "player"));
-    this.deployed++;
-    return true;
-  }
-  spawnEnemy() {
-    // 決まった順番の波で難易度を安定させます。150秒を過ぎると増援は終わります。
-    const sequence = this.time < 40 ? ["mouse", "mouse", "snake"] : ["mouse", "snake", "mouse", "fox", "snake"];
-    if (this.units.filter(unit => unit.side === "enemy").length < SETTINGS.maxEnemies) {
-      this.units.push(new Unit(this.nextId++, sequence[this.wave % sequence.length], "enemy"));
-    }
-    this.wave++;
-    this.nextEnemy += this.time < 40 ? 7 : 5.5;
-  }
-  step(dt) {
-    if (this.status !== "playing") return;
-    this.time += dt;
-    this.food = Math.min(SETTINGS.maxFood, this.food + SETTINGS.foodRate * dt);
-    for (const kind of Object.keys(this.cooldowns)) this.cooldowns[kind] = Math.max(0, this.cooldowns[kind] - dt);
-    if (this.time >= this.nextEnemy && this.nextEnemy <= SETTINGS.waveEnd) this.spawnEnemy();
-    const hits = [];
-    // 双方の攻撃を同時に集計するため、ユニットの配列順に有利・不利が生まれません。
-    for (const unit of this.units) {
-      if (unit.hp <= 0) continue;
-      const direction = unit.side === "player" ? 1 : -1;
-      const opponents = this.units.filter(other => other.side !== unit.side && other.hp > 0);
-      let target = null;
-      let distance = Infinity;
-      for (const other of opponents) {
-        const gap = Math.abs(other.x - unit.x);
-        if (gap < distance) { target = other; distance = gap; }
-      }
-      const nestX = unit.side === "player" ? SETTINGS.enemyX : SETTINGS.playerX;
-      const nestDistance = Math.abs(nestX - unit.x);
-      const inRange = distance <= SETTINGS.range;
-      const atNest = nestDistance <= SETTINGS.range && !inRange;
-      unit.attacking = inRange || atNest;
-      unit.attackTimer = Math.max(0, unit.attackTimer - dt);
-      unit.flash = Math.max(0, unit.flash - dt);
-      if (unit.attacking) {
-        if (unit.attackTimer <= 0) {
-          hits.push({ attacker: unit, target: inRange ? target : null });
-          unit.attackTimer = unit.config.interval;
-          unit.flash = 0.18;
-        }
-      } else {
-        // 相手の目の前で停止し、高速な鳥でもすり抜けないよう移動量を制限します。
-        const forward = opponents.filter(other => (other.x - unit.x) * direction >= 0);
-        const nearestGap = Math.min(nestDistance, ...forward.map(other => Math.abs(other.x - unit.x)));
-        unit.x += direction * Math.min(unit.config.speed * dt, Math.max(0, nearestGap - SETTINGS.range + 0.01));
-      }
-    }
-    for (const { attacker, target } of hits) {
-      if (target) target.hp -= attacker.config.attack;
-      else if (attacker.side === "player") this.enemyHp = Math.max(0, this.enemyHp - attacker.config.attack);
-      else this.playerHp = Math.max(0, this.playerHp - attacker.config.attack);
-      this.effects.push({ x: target ? target.x : attacker.side === "player" ? SETTINGS.enemyX : SETTINGS.playerX,
-        value: attacker.config.attack, age: 0, enemy: attacker.side === "enemy" });
-    }
-    for (const unit of this.units) {
-      if (unit.hp <= 0 && unit.side === "enemy") {
-        this.food = Math.min(SETTINGS.maxFood, this.food + unit.config.reward);
-        this.defeated++;
-      }
-    }
-    this.units = this.units.filter(unit => unit.hp > 0);
-    for (const effect of this.effects) effect.age += dt;
-    this.effects = this.effects.filter(effect => effect.age < 0.65).slice(-40);
-    // 同時に巣が壊れた場合はプレイヤーの勝利とします。
-    if (this.enemyHp <= 0) this.status = "victory";
-    else if (this.playerHp <= 0) this.status = "gameover";
-  }
-}
-
-function initializeGame() {
-  const game = new Battle();
-  const canvas = document.getElementById("battlefield");
-  const ctx = canvas.getContext("2d");
-  const overlay = document.getElementById("overlay");
-  const action = document.getElementById("dialog-action");
-  const pause = document.getElementById("pause");
-  const message = document.getElementById("message");
-  const buttons = new Map();
-  const images = new Map();
-  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let lastTimestamp = 0;
-  let accumulator = 0;
-  let displayedStatus = "ready";
-  let displayedMessage = "";
-  let uiClock = 0;
-  const formatTime = seconds => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
-
-  for (const config of [...Object.values(BIRDS), ...Object.values(ENEMIES)]) {
-    if (config.image) { const img = new Image(); img.src = config.image; images.set(config, img); }
-  }
-  for (const [index, [kind, config]] of Object.entries(BIRDS).entries()) {
-    const button = document.createElement("button");
-    button.className = "bird-button";
-    button.disabled = true;
-    button.innerHTML = `<span class="bird-icon" aria-hidden="true">${config.icon}</span><span><span class="bird-name">${config.name}</span><span class="bird-desc">${config.description}</span><span class="bird-cost">🌾 ${config.cost}</span><span class="button-status">スタートで出撃</span></span><span class="key" aria-hidden="true">${index + 1}</span><span class="cooldown-fill"></span>`;
-    if (config.image) {
-      const img = document.createElement("img");
-      img.src = config.image; img.alt = "";
-      img.addEventListener("error", () => { button.querySelector(".bird-icon").textContent = config.icon; });
-      button.querySelector(".bird-icon").replaceChildren(img);
-    }
-    button.addEventListener("click", () => { game.deploy(kind); updateUI(); });
-    document.getElementById("roster").append(button);
-    buttons.set(kind, button);
-  }
-
-  function showDialog(title, description, label, icon, caption) {
-    document.getElementById("dialog-title").textContent = title;
-    document.getElementById("dialog-description").textContent = description;
-    document.getElementById("dialog-icon").textContent = icon;
-    document.getElementById("dialog-caption").textContent = caption;
-    action.textContent = label;
-    overlay.hidden = false;
-    action.focus({ preventScroll: true });
-  }
-  function togglePause() {
-    if (game.status === "playing") game.status = "paused";
-    else if (game.status === "paused") game.status = "playing";
-    accumulator = 0;
-    updateUI();
-  }
-  action.addEventListener("click", () => {
-    if (game.status === "paused") game.status = "playing";
-    else { game.reset(); game.start(); }
-    accumulator = 0;
-    updateUI();
-    pause.focus({ preventScroll: true });
-  });
-  pause.addEventListener("click", togglePause);
-  document.addEventListener("keydown", event => {
-    if (event.repeat || event.ctrlKey || event.metaKey || event.altKey) return;
-    if (event.key.toLowerCase() === "p") { togglePause(); event.preventDefault(); }
-    const kind = Object.keys(BIRDS)[Number(event.key) - 1];
-    if (kind && game.status === "playing") { game.deploy(kind); updateUI(); event.preventDefault(); }
-  });
-  // タブを離れた時間が突然戦闘に加算されないよう自動停止します。
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden && game.status === "playing") togglePause();
-    lastTimestamp = 0;
-    accumulator = 0;
-  });
-
-  function updateUI() {
-    document.getElementById("food").textContent = Math.floor(game.food);
-    document.getElementById("time").textContent = formatTime(game.time);
-    for (const side of ["player", "enemy"]) {
-      const hp = game[`${side}Hp`];
-      document.getElementById(`${side}-hp`).value = hp;
-      document.getElementById(`${side}-hp-text`).textContent = `${hp} / ${SETTINGS[`${side}Hp`]}`;
-    }
-    pause.disabled = !["playing", "paused"].includes(game.status);
-    pause.textContent = game.status === "paused" ? "再開する" : "一時停止";
-    const full = game.units.filter(unit => unit.side === "player").length >= SETTINGS.maxAllies;
-    for (const [kind, button] of buttons) {
-      const remaining = game.cooldowns[kind];
-      button.disabled = !game.canDeploy(kind);
-      const status = game.status !== "playing" ? "paused" === game.status ? "一時停止中" : game.status === "ready" ? "スタートで出撃" : "作戦終了" :
-        remaining > 0 ? `あと ${remaining.toFixed(1)} 秒` : full ? "仲間が18羽出撃中" : game.food < BIRDS[kind].cost ? `エサあと ${Math.ceil(BIRDS[kind].cost - game.food)}` : "出撃する →";
-      button.querySelector(".button-status").textContent = status;
-      button.querySelector(".cooldown-fill").style.width = `${100 * remaining / BIRDS[kind].cooldown}%`;
-      button.setAttribute("aria-label", `${BIRDS[kind].name}、エサ${BIRDS[kind].cost}、${status}`);
-    }
-    const tip = game.time >= 150 ? "相手の増援はおしまい！鳥たちを送って、巣まで進もう。" : game.time >= 40 ? "キツネが登場！ふくろう・わしで前線を支えよう。" : "まずはすずめを出して、エサがたまったらふくろう・わしを！";
-    if (tip !== displayedMessage) { message.textContent = tip; displayedMessage = tip; }
-    if (game.status !== displayedStatus) {
-      displayedStatus = game.status;
-      if (game.status === "playing") overlay.hidden = true;
-      else if (game.status === "paused") showDialog("ちょっと、ひとやすみ", "エサと戦闘の時間は止まっています。準備ができたら再開しよう。", "作戦を再開 →", "🌿 🐦", "PAUSE");
-      else if (game.status === "victory" || game.status === "gameover") {
-        const won = game.status === "victory";
-        showDialog(won ? "VICTORY！" : "GAME OVER", `${won ? "草原の向こうまで、みんなで到着！" : "次はすずめで守りながら、わしも送ってみよう。"} 時間 ${formatTime(game.time)} · 出撃 ${game.deployed}羽 · 相手を倒した数 ${game.defeated}`, "もう一度遊ぶ", won ? "🏵️ 🐦 🏵️" : "🌱 🦉", won ? "作戦、大成功！" : "もう一度、挑戦しよう");
-        message.textContent = won ? "鳥たちの勝利！もう一度遊ぶボタンで再挑戦できます。" : "巣のHPが0になりました。もう一度挑戦してみよう！";
-      }
-    }
-  }
-
-  function ellipse(x, y, rx, ry, color) {
-    ctx.fillStyle = color; ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); ctx.fill();
-  }
-  function nest(x, enemy) {
-    const y = 305;
-    ellipse(x, y + 13, 58, 11, "#607c4925");
-    ctx.fillStyle = enemy ? "#c68c68" : "#ac9165";
-    ctx.beginPath(); ctx.moveTo(x - 53, y - 13); ctx.quadraticCurveTo(x, y + 59, x + 53, y - 13); ctx.closePath(); ctx.fill();
-    ellipse(x, y - 14, 53, 15, enemy ? "#805e4d" : "#7b6950");
-    ellipse(x, y - 14, 39, 8, "#e8d6a1");
-    ctx.strokeStyle = enemy ? "#e1b78b" : "#d7bb83"; ctx.lineWidth = 4;
-    for (let i = 0; i < 4; i++) { ctx.beginPath(); ctx.moveTo(x - 35 + i * 17, y - 1); ctx.lineTo(x - 15 + i * 14, y + 20); ctx.stroke(); }
-    ctx.font = "32px 'Segoe UI Emoji',sans-serif"; ctx.fillText(enemy ? "🍂" : "🌿", x - 27, y - 26);
-    ctx.fillText(enemy ? "🥚" : "🐣", x + 13, y - 13);
-    ctx.fillStyle = enemy ? "#9b7758" : "#638453"; ctx.fillRect(x + 39, y - 100, 4, 83);
-    ctx.fillStyle = enemy ? "#e8b789" : "#8db676"; ctx.beginPath(); ctx.moveTo(x + 43, y - 100); ctx.lineTo(x + 76, y - 89); ctx.lineTo(x + 43, y - 75); ctx.fill();
-  }
-  function render() {
-    const rect = canvas.getBoundingClientRect();
-    const dpr = Math.min(devicePixelRatio || 1, 2);
-    const width = Math.round(rect.width * dpr), height = Math.round(rect.height * dpr);
-    if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; }
-    ctx.setTransform(canvas.width / SETTINGS.width, 0, 0, canvas.height / SETTINGS.height, 0, 0);
-    ctx.textAlign = "center";
-    const sky = ctx.createLinearGradient(0, 0, 0, 350); sky.addColorStop(0, "#dff2ee"); sky.addColorStop(1, "#f4f9da");
-    ctx.fillStyle = sky; ctx.fillRect(0, 0, 1200, 440);
-    ellipse(920, 74, 36, 36, "#fff4b5");
-    for (const [x,y] of [[190,64],[450,105],[770,47],[1050,140]]) {
-      ellipse(x,y,47,12,"#ffffffb0"); ellipse(x-16,y-7,23,14,"#ffffffb0"); ellipse(x+10,y-11,25,18,"#ffffffb0");
-    }
-    ellipse(250,345,380,154,"#d3e5b5"); ellipse(900,345,460,140,"#c4dda4");
-    ctx.fillStyle = "#b4cf87"; ctx.fillRect(0,297,1200,143);
-    ellipse(630,363,740,36,"#dfe6b2"); ellipse(620,356,690,24,"#ecedc2");
-    for (let i=0;i<25;i++) {
-      const x=(i*173+17)%1200, y=331+(i*29)%95;
-      ctx.strokeStyle="#88ad65";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y+8);ctx.lineTo(x-3,y);ctx.moveTo(x,y+8);ctx.lineTo(x+5,y-3);ctx.stroke();
-      if(i%3===0){ellipse(x,y-3,5,5,i%2?"#fff7c0":"#fff8ed");ellipse(x,y-3,2,2,"#e8bb70");}
-    }
-    nest(SETTINGS.playerX,false); nest(SETTINGS.enemyX,true);
-    // 小さい画面でもユニットが判別できるよう、横幅に合わせてアイコンを少し大きくします。
-    const mobileBoost = rect.width < 600 ? 1.4 : 1;
-    for (const unit of [...game.units].sort((a,b)=>(a.id%3)-(b.id%3))) {
-      const y=311+(unit.id%3)*13;
-      const bounce=reducedMotion || !["playing"].includes(game.status) || unit.attacking ? 0 : Math.sin(game.time*9+unit.id)*3;
-      const size=unit.config.size*mobileBoost;
-      ellipse(unit.x,y+5,size*.36,5,"#52654020");
-      ctx.save();ctx.translate(unit.x+(unit.flash>0?(unit.side==="player"?5:-5):0),y-size*.42+bounce);
-      // 絵文字の標準の向きは環境によって異なるため、足元の矢印でも進む向きを表示します。
-      const img=images.get(unit.config);
-      if(img?.complete && img.naturalWidth>0)ctx.drawImage(img,-size/2,-size/2,size,size);
-      else {ctx.font=`${size}px 'Segoe UI Emoji','Apple Color Emoji',sans-serif`;ctx.textBaseline="middle";ctx.fillText(unit.config.icon,0,0);}
-      ctx.restore();
-      const barWidth=38*mobileBoost;
-      ctx.fillStyle="#ffffffd0";ctx.fillRect(unit.x-barWidth/2,y-size-11,barWidth,5);
-      ctx.fillStyle=unit.side==="player"?"#60974f":"#c88765";ctx.fillRect(unit.x-barWidth/2,y-size-11,barWidth*Math.max(0,unit.hp/unit.config.hp),5);
-      ctx.font="13px sans-serif";ctx.fillStyle=unit.side==="player"?"#527d44":"#a47453";ctx.fillText(unit.side==="player"?"›":"‹",unit.x,y+16);
-      if(unit.flash>0){ctx.fillStyle="#fff6be";ctx.font="22px sans-serif";ctx.fillText("✦",unit.x+(unit.side==="player"?25:-25),y-28);}
-    }
-    ctx.textBaseline="alphabetic";
-    if(!reducedMotion) for(const effect of game.effects){ctx.globalAlpha=1-effect.age/.65;ctx.fillStyle=effect.enemy?"#a66244":"#4e7b38";ctx.font="bold 17px sans-serif";ctx.fillText(`−${effect.value}`,effect.x,255-effect.age*40);}
-    ctx.globalAlpha=1;
-    ctx.font="12px sans-serif";ctx.fillStyle="#6f8a54";ctx.fillText("はじまりの草原",600,414);
-  }
-  function frame(timestamp) {
-    const elapsed=lastTimestamp ? Math.min((timestamp-lastTimestamp)/1000,.1) : 0;
-    lastTimestamp=timestamp;
-    if(game.status==="playing") {
-      accumulator+=elapsed;
-      while(accumulator>=1/60){game.step(1/60);accumulator-=1/60;}
-    }
-    uiClock+=elapsed;
-    if(uiClock>=.1 || game.status!==displayedStatus){updateUI();uiClock=0;}
-    render();
-    requestAnimationFrame(frame);
-  }
-  updateUI();
-  requestAnimationFrame(frame);
-}
-
-// Nodeで同じ戦闘モデルを検証可能にし、ブラウザでは通常どおり初期化します。
-if (typeof module !== "undefined" && module.exports) module.exports = { Battle, Unit, BIRDS, ENEMIES, SETTINGS };
-if (typeof document !== "undefined") initializeGame();
+"use strict";const BIRDS={sparrow:{name:"すずめ",icon:"🐦",image:null,hp:65,attack:12,speed:85,interval:1,cost:50,cooldown:4,size:40,description:"すばやい先発隊"},owl:{name:"ふくろう",icon:"🦉",image:null,hp:200,attack:25,speed:48,interval:1.35,cost:100,cooldown:7,size:50,description:"頼れるバランス型"},eagle:{name:"わし",icon:"🦅",image:null,hp:520,attack:62,speed:30,interval:1.9,cost:200,cooldown:12,size:64,description:"ゆっくり、力強く"}};const ENEMIES={mouse:{name:"ネズミ",icon:"🐭",image:null,hp:70,attack:9,speed:42,interval:1.3,reward:10,size:38},snake:{name:"ヘビ",icon:"🐍",image:null,hp:140,attack:17,speed:33,interval:1.6,reward:15,size:44},fox:{name:"キツネ",icon:"🦊",image:null,hp:300,attack:29,speed:28,interval:1.8,reward:25,size:54}};const SETTINGS={width:1200,height:440,playerX:90,enemyX:1110,playerHp:1600,enemyHp:18000,initialFood:160,foodRate:17,maxFood:999,range:48,maxAllies:18,maxEnemies:16,waveEnd:150};class Unit{constructor(id,kind,side){this.id=id;this.kind=kind;this.side=side;this.config=(side==="player"?BIRDS:ENEMIES)[kind];this.hp=this.config.hp;this.x=side==="player"?SETTINGS.playerX+32:SETTINGS.enemyX-32;this.attackTimer=0.35;this.attacking=false;this.flash=0;}}
+class Battle{constructor(){this.reset();}
+reset(){this.status="ready";this.time=0;this.food=SETTINGS.initialFood;this.playerHp=SETTINGS.playerHp;this.enemyHp=SETTINGS.enemyHp;this.units=[];this.cooldowns=Object.fromEntries(Object.keys(BIRDS).map(key=>[key,0]));this.nextEnemy=7;this.wave=0;this.nextId=1;this.defeated=0;this.deployed=0;this.effects=[];}
+start(){if(this.status==="ready")this.status="playing";}
+canDeploy(kind){return!!BIRDS[kind]&&this.status==="playing"&&this.food>=BIRDS[kind].cost&&this.cooldowns[kind]<=0&&this.units.filter(unit=>unit.side==="player").length<SETTINGS.maxAllies;}
+deploy(kind){if(!this.canDeploy(kind))return false;this.food-=BIRDS[kind].cost;this.cooldowns[kind]=BIRDS[kind].cooldown;this.units.push(new Unit(this.nextId++,kind,"player"));this.deployed++;return true;}
+spawnEnemy(){const sequence=this.time<40?["mouse","mouse","snake"]:["mouse","snake","mouse","fox","snake"];if(this.units.filter(unit=>unit.side==="enemy").length<SETTINGS.maxEnemies){this.units.push(new Unit(this.nextId++,sequence[this.wave%sequence.length],"enemy"));}
+this.wave++;this.nextEnemy+=this.time<40?7:5.5;}
+step(dt){if(this.status!=="playing")return;this.time+=dt;this.food=Math.min(SETTINGS.maxFood,this.food+SETTINGS.foodRate*dt);for(const kind of Object.keys(this.cooldowns))this.cooldowns[kind]=Math.max(0,this.cooldowns[kind]-dt);if(this.time>=this.nextEnemy&&this.nextEnemy<=SETTINGS.waveEnd)this.spawnEnemy();const hits=[];for(const unit of this.units){if(unit.hp<=0)continue;const direction=unit.side==="player"?1:-1;const opponents=this.units.filter(other=>other.side!==unit.side&&other.hp>0);let target=null;let distance=Infinity;for(const other of opponents){const gap=Math.abs(other.x-unit.x);if(gap<distance){target=other;distance=gap;}}
+const nestX=unit.side==="player"?SETTINGS.enemyX:SETTINGS.playerX;const nestDistance=Math.abs(nestX-unit.x);const inRange=distance<=SETTINGS.range;const atNest=nestDistance<=SETTINGS.range&&!inRange;unit.attacking=inRange||atNest;unit.attackTimer=Math.max(0,unit.attackTimer-dt);unit.flash=Math.max(0,unit.flash-dt);if(unit.attacking){if(unit.attackTimer<=0){hits.push({attacker:unit,target:inRange?target:null});unit.attackTimer=unit.config.interval;unit.flash=0.18;}}else{const forward=opponents.filter(other=>(other.x-unit.x)*direction>=0);const nearestGap=Math.min(nestDistance,...forward.map(other=>Math.abs(other.x-unit.x)));unit.x+=direction*Math.min(unit.config.speed*dt,Math.max(0,nearestGap-SETTINGS.range+0.01));}}
+for(const{attacker,target}of hits){if(target)target.hp-=attacker.config.attack;else if(attacker.side==="player")this.enemyHp=Math.max(0,this.enemyHp-attacker.config.attack);else this.playerHp=Math.max(0,this.playerHp-attacker.config.attack);this.effects.push({x:target?target.x:attacker.side==="player"?SETTINGS.enemyX:SETTINGS.playerX,value:attacker.config.attack,age:0,enemy:attacker.side==="enemy"});}
+for(const unit of this.units){if(unit.hp<=0&&unit.side==="enemy"){this.food=Math.min(SETTINGS.maxFood,this.food+unit.config.reward);this.defeated++;}}
+this.units=this.units.filter(unit=>unit.hp>0);for(const effect of this.effects)effect.age+=dt;this.effects=this.effects.filter(effect=>effect.age<0.65).slice(-40);if(this.enemyHp<=0)this.status="victory";else if(this.playerHp<=0)this.status="gameover";}}
+function initializeGame(){const game=new Battle();const canvas=document.getElementById("battlefield");const ctx=canvas.getContext("2d");const overlay=document.getElementById("overlay");const action=document.getElementById("dialog-action");const pause=document.getElementById("pause");const message=document.getElementById("message");const buttons=new Map();const images=new Map();const reducedMotion=matchMedia("(prefers-reduced-motion: reduce)").matches;let lastTimestamp=0;let accumulator=0;let displayedStatus="ready";let displayedMessage="";let uiClock=0;const formatTime=seconds=>`${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;for(const config of[...Object.values(BIRDS),...Object.values(ENEMIES)]){if(config.image){const img=new Image();img.src=config.image;images.set(config,img);}}
+for(const[index,[kind,config]]of Object.entries(BIRDS).entries()){const button=document.createElement("button");button.className="bird-button";button.disabled=true;button.innerHTML=`<span class="bird-icon" aria-hidden="true">${config.icon}</span><span><span class="bird-name">${config.name}</span><span class="bird-desc">${config.description}</span><span class="bird-cost">🌾 ${config.cost}</span><span class="button-status">スタートで出撃</span></span><span class="key" aria-hidden="true">${index + 1}</span><span class="cooldown-fill"></span>`;if(config.image){const img=document.createElement("img");img.src=config.image;img.alt="";img.addEventListener("error",()=>{button.querySelector(".bird-icon").textContent=config.icon;});button.querySelector(".bird-icon").replaceChildren(img);}
+button.addEventListener("click",()=>{game.deploy(kind);updateUI();});document.getElementById("roster").append(button);buttons.set(kind,button);}
+function showDialog(title,description,label,icon,caption){document.getElementById("dialog-title").textContent=title;document.getElementById("dialog-description").textContent=description;document.getElementById("dialog-icon").textContent=icon;document.getElementById("dialog-caption").textContent=caption;action.textContent=label;overlay.hidden=false;action.focus({preventScroll:true});}
+function togglePause(){if(game.status==="playing")game.status="paused";else if(game.status==="paused")game.status="playing";accumulator=0;updateUI();}
+action.addEventListener("click",()=>{if(game.status==="paused")game.status="playing";else{game.reset();game.start();}
+accumulator=0;updateUI();pause.focus({preventScroll:true});});pause.addEventListener("click",togglePause);document.addEventListener("keydown",event=>{if(event.repeat||event.ctrlKey||event.metaKey||event.altKey)return;if(event.key.toLowerCase()==="p"){togglePause();event.preventDefault();}
+const kind=Object.keys(BIRDS)[Number(event.key)-1];if(kind&&game.status==="playing"){game.deploy(kind);updateUI();event.preventDefault();}});document.addEventListener("visibilitychange",()=>{if(document.hidden&&game.status==="playing")togglePause();lastTimestamp=0;accumulator=0;});function updateUI(){document.getElementById("food").textContent=Math.floor(game.food);document.getElementById("time").textContent=formatTime(game.time);for(const side of["player","enemy"]){const hp=game[`${side}Hp`];document.getElementById(`${side}-hp`).value=hp;document.getElementById(`${side}-hp-text`).textContent=`${hp} / ${SETTINGS[`${side}Hp`]}`;}
+pause.disabled=!["playing","paused"].includes(game.status);pause.textContent=game.status==="paused"?"再開する":"一時停止";const full=game.units.filter(unit=>unit.side==="player").length>=SETTINGS.maxAllies;for(const[kind,button]of buttons){const remaining=game.cooldowns[kind];button.disabled=!game.canDeploy(kind);const status=game.status!=="playing"?"paused"===game.status?"一時停止中":game.status==="ready"?"スタートで出撃":"作戦終了":remaining>0?`あと ${remaining.toFixed(1)} 秒`:full?"仲間が18羽出撃中":game.food<BIRDS[kind].cost?`エサあと ${Math.ceil(BIRDS[kind].cost - game.food)}`:"出撃する →";button.querySelector(".button-status").textContent=status;button.querySelector(".cooldown-fill").style.width=`${100 * remaining / BIRDS[kind].cooldown}%`;button.setAttribute("aria-label",`${BIRDS[kind].name}、エサ${BIRDS[kind].cost}、${status}`);}
+const tip=game.time>=150?"相手の増援はおしまい！鳥たちを送って、巣まで進もう。":game.time>=40?"キツネが登場！ふくろう・わしで前線を支えよう。":"まずはすずめを出して、エサがたまったらふくろう・わしを！";if(tip!==displayedMessage){message.textContent=tip;displayedMessage=tip;}
+if(game.status!==displayedStatus){displayedStatus=game.status;if(game.status==="playing")overlay.hidden=true;else if(game.status==="paused")showDialog("ちょっと、ひとやすみ","エサと戦闘の時間は止まっています。準備ができたら再開しよう。","作戦を再開 →","🌿 🐦","PAUSE");else if(game.status==="victory"||game.status==="gameover"){const won=game.status==="victory";showDialog(won?"VICTORY！":"GAME OVER",`${won ? "草原の向こうまで、みんなで到着！" : "次はすずめで守りながら、わしも送ってみよう。"} 時間 ${formatTime(game.time)} · 出撃 ${game.deployed}羽 · 相手を倒した数 ${game.defeated}`,"もう一度遊ぶ",won?"🏵️ 🐦 🏵️":"🌱 🦉",won?"作戦、大成功！":"もう一度、挑戦しよう");message.textContent=won?"鳥たちの勝利！もう一度遊ぶボタンで再挑戦できます。":"巣のHPが0になりました。もう一度挑戦してみよう！";}}}
+function ellipse(x,y,rx,ry,color){ctx.fillStyle=color;ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fill();}
+function nest(x,enemy){const y=305;ellipse(x,y+13,58,11,"#607c4925");ctx.fillStyle=enemy?"#c68c68":"#ac9165";ctx.beginPath();ctx.moveTo(x-53,y-13);ctx.quadraticCurveTo(x,y+59,x+53,y-13);ctx.closePath();ctx.fill();ellipse(x,y-14,53,15,enemy?"#805e4d":"#7b6950");ellipse(x,y-14,39,8,"#e8d6a1");ctx.strokeStyle=enemy?"#e1b78b":"#d7bb83";ctx.lineWidth=4;for(let i=0;i<4;i++){ctx.beginPath();ctx.moveTo(x-35+i*17,y-1);ctx.lineTo(x-15+i*14,y+20);ctx.stroke();}
+ctx.font="32px 'Segoe UI Emoji',sans-serif";ctx.fillText(enemy?"🍂":"🌿",x-27,y-26);ctx.fillText(enemy?"🥚":"🐣",x+13,y-13);ctx.fillStyle=enemy?"#9b7758":"#638453";ctx.fillRect(x+39,y-100,4,83);ctx.fillStyle=enemy?"#e8b789":"#8db676";ctx.beginPath();ctx.moveTo(x+43,y-100);ctx.lineTo(x+76,y-89);ctx.lineTo(x+43,y-75);ctx.fill();}
+function render(){const rect=canvas.getBoundingClientRect();const dpr=Math.min(devicePixelRatio||1,2);const width=Math.round(rect.width*dpr),height=Math.round(rect.height*dpr);if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
+ctx.setTransform(canvas.width/SETTINGS.width,0,0,canvas.height/SETTINGS.height,0,0);ctx.textAlign="center";const sky=ctx.createLinearGradient(0,0,0,350);sky.addColorStop(0,"#dff2ee");sky.addColorStop(1,"#f4f9da");ctx.fillStyle=sky;ctx.fillRect(0,0,1200,440);ellipse(920,74,36,36,"#fff4b5");for(const[x,y]of[[190,64],[450,105],[770,47],[1050,140]]){ellipse(x,y,47,12,"#ffffffb0");ellipse(x-16,y-7,23,14,"#ffffffb0");ellipse(x+10,y-11,25,18,"#ffffffb0");}
+ellipse(250,345,380,154,"#d3e5b5");ellipse(900,345,460,140,"#c4dda4");ctx.fillStyle="#b4cf87";ctx.fillRect(0,297,1200,143);ellipse(630,363,740,36,"#dfe6b2");ellipse(620,356,690,24,"#ecedc2");for(let i=0;i<25;i++){const x=(i*173+17)%1200,y=331+(i*29)%95;ctx.strokeStyle="#88ad65";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y+8);ctx.lineTo(x-3,y);ctx.moveTo(x,y+8);ctx.lineTo(x+5,y-3);ctx.stroke();if(i%3===0){ellipse(x,y-3,5,5,i%2?"#fff7c0":"#fff8ed");ellipse(x,y-3,2,2,"#e8bb70");}}
+nest(SETTINGS.playerX,false);nest(SETTINGS.enemyX,true);const mobileBoost=rect.width<600?1.4:1;for(const unit of[...game.units].sort((a,b)=>(a.id%3)-(b.id%3))){const y=311+(unit.id%3)*13;const bounce=reducedMotion||!["playing"].includes(game.status)||unit.attacking?0:Math.sin(game.time*9+unit.id)*3;const size=unit.config.size*mobileBoost;ellipse(unit.x,y+5,size*.36,5,"#52654020");ctx.save();ctx.translate(unit.x+(unit.flash>0?(unit.side==="player"?5:-5):0),y-size*.42+bounce);const img=images.get(unit.config);if(img?.complete&&img.naturalWidth>0)ctx.drawImage(img,-size/2,-size/2,size,size);else{ctx.font=`${size}px 'Segoe UI Emoji','Apple Color Emoji',sans-serif`;ctx.textBaseline="middle";ctx.fillText(unit.config.icon,0,0);}
+ctx.restore();const barWidth=38*mobileBoost;ctx.fillStyle="#ffffffd0";ctx.fillRect(unit.x-barWidth/2,y-size-11,barWidth,5);ctx.fillStyle=unit.side==="player"?"#60974f":"#c88765";ctx.fillRect(unit.x-barWidth/2,y-size-11,barWidth*Math.max(0,unit.hp/unit.config.hp),5);ctx.font="13px sans-serif";ctx.fillStyle=unit.side==="player"?"#527d44":"#a47453";ctx.fillText(unit.side==="player"?"›":"‹",unit.x,y+16);if(unit.flash>0){ctx.fillStyle="#fff6be";ctx.font="22px sans-serif";ctx.fillText("✦",unit.x+(unit.side==="player"?25:-25),y-28);}}
+ctx.textBaseline="alphabetic";if(!reducedMotion)for(const effect of game.effects){ctx.globalAlpha=1-effect.age/.65;ctx.fillStyle=effect.enemy?"#a66244":"#4e7b38";ctx.font="bold 17px sans-serif";ctx.fillText(`−${effect.value}`,effect.x,255-effect.age*40);}
+ctx.globalAlpha=1;ctx.font="12px sans-serif";ctx.fillStyle="#6f8a54";ctx.fillText("はじまりの草原",600,414);}
+function frame(timestamp){const elapsed=lastTimestamp?Math.min((timestamp-lastTimestamp)/1000,.1):0;lastTimestamp=timestamp;if(game.status==="playing"){accumulator+=elapsed;while(accumulator>=1/60){game.step(1/60);accumulator-=1/60;}}
+uiClock+=elapsed;if(uiClock>=.1||game.status!==displayedStatus){updateUI();uiClock=0;}
+render();requestAnimationFrame(frame);}
+updateUI();requestAnimationFrame(frame);}
+if(typeof module!=="undefined"&&module.exports)module.exports={Battle,Unit,BIRDS,ENEMIES,SETTINGS};if(typeof document!=="undefined")initializeGame();

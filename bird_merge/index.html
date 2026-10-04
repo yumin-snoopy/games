@@ -1,67 +1,11 @@
-<!DOCTYPE html>
-<html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#e6f3f7" />
-    <title>ことりマージ 〜鳥を育てて大きくしよう！〜</title>
-    <link rel="stylesheet" href="style.css" />
-    <script defer src="https://cdn.jsdelivr.net/npm/matter-js@0.20.0/build/matter.min.js"></script>
-    <script defer src="script.js"></script>
-  </head>
-  <body>
-    <main class="app">
-      <header class="heading">
-        <span class="eyebrow">A LITTLE BIRD GARDEN</span>
-        <h1>ことりマージ<span class="title-dot">✦</span></h1>
-        <p>〜鳥を育てて大きくしよう！〜</p>
-      </header>
-      <section class="stats" aria-label="ゲーム情報">
-        <div class="stat"><span>SCORE</span><strong id="score">0</strong></div>
-        <div class="stat"><span>BEST</span><strong id="best">0</strong></div>
-        <div class="next">
-          <span>NEXT</span><canvas id="next-bird" width="64" height="64" aria-hidden="true"></canvas
-          ><small id="next-name"></small>
-        </div>
-      </section>
-      <div class="play-layout">
-        <section class="game-shell" aria-label="ことりマージのゲーム画面">
-          <canvas
+<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><meta name="theme-color" content="#e6f3f7" /><title>ことりマージ 〜鳥を育てて大きくしよう！〜</title><link rel="stylesheet" href="style.css" /><script defer src="https://cdn.jsdelivr.net/npm/matter-js@0.20.0/build/matter.min.js"></script><script defer src="script.js"></script><script src="../source-guard.js" defer></script></head><body><main class="app"><header class="heading"><span class="eyebrow">A LITTLE BIRD GARDEN</span><h1>ことりマージ<span class="title-dot">✦</span></h1><p>〜鳥を育てて大きくしよう！〜</p></header><section class="stats" aria-label="ゲーム情報"><div class="stat"><span>SCORE</span><strong id="score">0</strong></div><div class="stat"><span>BEST</span><strong id="best">0</strong></div><div class="next"><span>NEXT</span><canvas id="next-bird" width="64" height="64" aria-hidden="true"></canvas
+          ><small id="next-name"></small></div></section><div class="play-layout"><section class="game-shell" aria-label="ことりマージのゲーム画面"><canvas
             id="game"
             width="440"
             height="610"
             tabindex="0"
             aria-label="左右キーで位置を動かし、スペースキーで鳥を落とします"
-          ></canvas>
-          <div id="overlay" class="overlay" hidden>
-            <div class="result">
-              <span class="eyebrow">また育ててね</span>
-              <h2>GAME OVER</h2>
-              <p>今回のスコア <strong id="final-score">0</strong></p>
-              <p>ハイスコア <strong id="final-best">0</strong></p>
-              <button id="restart" type="button">もう一度遊ぶ</button>
-            </div>
-          </div>
-        </section>
-        <aside class="guide">
-          <h2>鳥の成長ずかん</h2>
-          <p>2羽が出会うと、ひとつ大きく。</p>
-          <ol id="bird-list"></ol>
-          <p class="max-note">ワシを育てて MAX BIRD！<br />ワシは最後の鳥です。</p>
-        </aside>
-      </div>
-      <section class="instructions">
-        <p><strong>同じ鳥をくっつけると、大きな鳥に進化します！</strong></p>
-        <p>
+          ></canvas><div id="overlay" class="overlay" hidden><div class="result"><span class="eyebrow">また育ててね</span><h2>GAME OVER</h2><p>今回のスコア <strong id="final-score">0</strong></p><p>ハイスコア <strong id="final-best">0</strong></p><button id="restart" type="button">もう一度遊ぶ</button></div></div></section><aside class="guide"><h2>鳥の成長ずかん</h2><p>2羽が出会うと、ひとつ大きく。</p><ol id="bird-list"></ol><p class="max-note">ワシを育てて MAX BIRD！<br />ワシは最後の鳥です。</p></aside></div><section class="instructions"><p><strong>同じ鳥をくっつけると、大きな鳥に進化します！</strong></p><p>
           マウスで移動・クリックで落下 ／ ← → ＋ Space<br />スマホはタッチで移動、指を離すと落下。
-        </p>
-        <p class="hint">点線を超えたまま3秒たつと終了。落下中の鳥には猶予があります。</p>
-        <div class="controls">
-          <button id="sound" type="button" aria-pressed="false">音：OFF</button
-          ><span id="status" role="status">読み込み中…</span>
-        </div>
-        <p id="storage-note" class="hint" hidden>このブラウザではハイスコアを保存できません。</p>
-      </section>
-    </main>
-  </body>
-</html>
+        </p><p class="hint">点線を超えたまま3秒たつと終了。落下中の鳥には猶予があります。</p><div class="controls"><button id="sound" type="button" aria-pressed="false">音：OFF</button
+          ><span id="status" role="status">読み込み中…</span></div><p id="storage-note" class="hint" hidden>このブラウザではハイスコアを保存できません。</p></section></main></body></html>
