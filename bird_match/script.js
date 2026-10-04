@@ -1,6 +1,7 @@
 "use strict";
 (() => {
   const SIZE = 8, SPECIAL = -1, SWIPE_MIN = 18;
+  const SPECIAL_COMBO = 5, MAX_SPECIAL_BIRDS = 3;
   // 時間制限モードは現在オフ: const DURATION = 60;
   const BIRDS = ["🐦", "🐤", "🐧", "🦉", "🦜", "🦩"];
   const NAMES = ["小鳥", "ひよこ", "ペンギン", "フクロウ", "オウム", "フラミンゴ"];
@@ -14,6 +15,11 @@
   const position = (row, col) => row * SIZE + col;
   const adjacent = (a, b) => Math.abs(Math.floor(a / SIZE) - Math.floor(b / SIZE)) + Math.abs(a % SIZE - b % SIZE) === 1;
   const swap = (cells, a, b) => { [cells[a], cells[b]] = [cells[b], cells[a]]; };
+  const countSpecialBirds = cells => cells.filter(bird => bird === SPECIAL).length;
+  const canCreateSpecial = (chain, createdThisMove, cells) =>
+    chain === SPECIAL_COMBO && !createdThisMove && countSpecialBirds(cells) < MAX_SPECIAL_BIRDS;
+  const rainbowClearIndices = (cells, target, usedIndex) =>
+    new Set([...cells.flatMap((bird, index) => bird === target ? [index] : []), usedIndex]);
 
   function findMatches(cells) {
     const matched = new Set(), runs = [];
@@ -75,7 +81,8 @@
     board.forEach((bird, index) => {
       const cell = document.createElement("button");
       cell.type = "button";
-      cell.className = `tile ${classes[index] || ""}${selected === index ? " selected" : ""}${bird === SPECIAL ? " special" : ""}`.trim();
+      const neighbor = selected !== null && board[selected] === SPECIAL && bird !== SPECIAL && adjacent(selected, index);
+      cell.className = `tile ${classes[index] || ""}${selected === index ? " selected" : ""}${bird === SPECIAL ? " special" : ""}${neighbor ? " rainbow-neighbor" : ""}`.trim();
       cell.dataset.index = String(index);
       cell.disabled = gameOver || busy;
       const place = `${Math.floor(index / SIZE) + 1}行${index % SIZE + 1}列`;
@@ -83,8 +90,8 @@
         cell.dataset.bird = String(bird);
         cell.setAttribute("aria-label", `${place} ${bird === SPECIAL ? "レインボー鳥" : NAMES[bird]}${selected === index ? " 選択中" : ""}`);
         const icon = document.createElement("span");
-        icon.className = "bird";
-        icon.textContent = bird === SPECIAL ? "🌈🐦" : BIRDS[bird];
+        icon.className = bird === SPECIAL ? "bird rainbow-symbol" : "bird";
+        icon.textContent = bird === SPECIAL ? "✦" : BIRDS[bird];
         icon.setAttribute("aria-hidden", "true");
         cell.append(icon);
       } else cell.setAttribute("aria-label", `${place} 空き`);
@@ -102,7 +109,7 @@
     updateStats();
     return bonus;
   }
-  function collapseAndRefill() {
+  function collapseAndRefill(specialIndex = null) {
     const classes = {};
     for (let col = 0; col < SIZE; col++) {
       const survivors = [];
@@ -110,10 +117,17 @@
         const value = board[position(row, col)];
         if (value !== null) survivors.push(value);
       }
+      let survivorIndex = 0;
       for (let row = SIZE - 1; row >= 0; row--) {
-        const index = position(row, col), survivorIndex = SIZE - 1 - row;
-        board[index] = survivorIndex < survivors.length ? survivors[survivorIndex] : randomBird();
-        classes[index] = survivorIndex < survivors.length ? "falling" : "new";
+        const index = position(row, col);
+        if (index === specialIndex) {
+          board[index] = SPECIAL;
+          classes[index] = "special-born";
+          continue;
+        }
+        const hasSurvivor = survivorIndex < survivors.length;
+        board[index] = hasSurvivor ? survivors[survivorIndex++] : randomBird();
+        classes[index] = hasSurvivor ? "falling" : "new";
       }
     }
     render(classes);
@@ -126,17 +140,19 @@
       chain++;
       const bonus = addClearScore(matched.size, runs.reduce((sum, run) => sum + pointsFor(run), 0), chain);
       chainBonus += bonus;
-      const specialIndex = chain === 3 && !madeSpecial ? [...matched][Math.floor(Math.random() * matched.size)] : null;
-      setMessage(chain >= 3 ? `${chain} COMBO！ SPECIAL BIRD！ ボーナス +${bonus}` : chain > 1 ? `${chain} COMBO！ ボーナス +${bonus}` : `${matched.size}羽そろいました！`);
+      const specialIndex = canCreateSpecial(chain, madeSpecial, board) ? [...matched][Math.floor(Math.random() * matched.size)] : null;
+      const comboLabel = chain === 4 ? " 高得点コンボ！" : chain === 3 ? " コンボボーナス！" : "";
+      setMessage(specialIndex !== null
+        ? `${chain} COMBO！ SPECIAL BIRD！ ボーナス +${bonus}`
+        : chain === SPECIAL_COMBO ? `${chain} COMBO！`
+        : chain > 1 ? `${chain} COMBO！${comboLabel} ボーナス +${bonus}` : `${matched.size}羽そろいました！`);
       render(Object.fromEntries([...matched].map(index => [index, "clearing"])));
       await pause(220);
       if (currentGame !== gameId) return;
       for (const index of matched) board[index] = null;
-      collapseAndRefill();
+      collapseAndRefill(specialIndex);
       if (specialIndex !== null) {
-        board[specialIndex] = SPECIAL;
         madeSpecial = true;
-        render({ [specialIndex]: "special-born" });
       }
       await pause(specialIndex !== null ? 650 : 300);
     }
@@ -166,9 +182,12 @@
       await pause(300);
       if (currentGame !== gameId) return;
     } else if (target !== null && target !== SPECIAL) {
-      const matched = new Set(board.flatMap((bird, index) => bird === target ? [index] : []));
-      addClearScore(matched.size, matched.size * 100, 1);
-      setMessage(`レインボー鳥！ ${NAMES[target]}を${matched.size}羽消去！`);
+      const usedIndex = board[a] === SPECIAL ? a : b;
+      const matched = rainbowClearIndices(board, target, usedIndex);
+      const targetCount = matched.size - 1;
+      // The rainbow bird is consumed with its target birds, freeing a slot under the three-bird cap.
+      addClearScore(targetCount + 1, targetCount * 100, 1);
+      setMessage(`レインボー鳥！ ${NAMES[target]}を${targetCount}羽消去！`);
       render(Object.fromEntries([...matched].map(index => [index, "clearing"])));
       await pause(260);
       if (currentGame !== gameId) return;
@@ -193,7 +212,14 @@
     const index = Number(cell.dataset.index);
     if (selected === null) {
       selected = index;
-      setMessage("上下左右の隣の鳥を選んでください。");
+      if (board[index] === SPECIAL) {
+        setMessage("レインボー鳥！ 隣の鳥と交換しよう！");
+        const currentGame = gameId;
+        setTimeout(() => {
+          if (currentGame === gameId && selected === index && board[index] === SPECIAL && !busy && !gameOver)
+            setMessage("上下左右の隣の鳥を選んでください。");
+        }, 1800);
+      } else setMessage("上下左右の隣の鳥を選んでください。");
       render();
     } else if (selected === index) {
       selected = null;
@@ -276,5 +302,5 @@
     if (key === "f12" || (event.ctrlKey && key === "u") || (event.ctrlKey && event.shiftKey && ["i", "j", "c"].includes(key))) event.preventDefault();
   });
   startGame();
-  window.BirdMatchRules = Object.freeze({ findMatches, hasMove, makeBoard, pointsFor, adjacent });
+  window.BirdMatchRules = Object.freeze({ findMatches, hasMove, makeBoard, pointsFor, adjacent, countSpecialBirds, canCreateSpecial, rainbowClearIndices });
 })();
