@@ -8,15 +8,21 @@ button{font:inherit}
 h1{font-size:clamp(30px,6vw,46px);line-height:1.15;letter-spacing:-.025em;margin:0}
 .subtitle{font-size:clamp(15px,3vw,18px);font-weight:650;margin:10px 0 0}
 .play-area{border:1px solid #dfeae3;border-radius:28px;background:#fffdfa;box-shadow:0 20px 50px #52746a18;padding:22px}
-.dashboard{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:stretch}
+.dashboard{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:stretch}
 .stat{min-height:64px;border-radius:14px;background:#eef5f0;padding:10px 15px;display:flex;flex-direction:column;justify-content:center}
 .stat span{font-size:11px;font-weight:800;letter-spacing:.14em;color:#547367}
 .stat strong{font-size:25px;font-variant-numeric:tabular-nums;line-height:1.2}
+/* 時間制限モードは現在オフ
 .time-stat{background:#fff0df;color:#855524}
 .time-stat span{color:#855524}
 .time-stat.urgent{background:#ffe2e2;color:#a83737}
-.settings{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:15px;font-size:15px;font-weight:800}
-.settings select{max-width:100%;border:2px solid #bdd8cb;border-radius:10px;background:#fff;color:#334b48;padding:9px 12px;font:inherit;cursor:pointer}
+*/
+.settings{display:flex;align-items:center;justify-content:center;gap:12px;width:fit-content;max-width:100%;margin:15px auto 0;padding:10px 14px;border:1px solid #dceae1;border-radius:15px;background:#f2f7f3;font-size:15px;font-weight:800}
+.settings label{white-space:nowrap;color:#42675b}
+.select-wrap{position:relative;display:block;flex:0 1 240px;min-width:0}
+.select-wrap::after{content:"";position:absolute;right:16px;top:50%;width:9px;height:9px;border-right:2px solid #327b69;border-bottom:2px solid #327b69;transform:translateY(-70%) rotate(45deg);pointer-events:none}
+.settings select{appearance:none;-webkit-appearance:none;display:block;width:100%;min-width:200px;min-height:44px;border:2px solid #9fc9b4;border-radius:10px;background:#fff;color:#334b48;padding:8px 38px 8px 14px;font:inherit;line-height:1.3;cursor:pointer;box-shadow:0 2px 5px #4e846c12}
+.settings select:hover{border-color:#5b9f7e;background:#fffefa}
 .new-game{border:0;border-radius:14px;padding:0 20px;background:#327b69;color:white;font-size:13px;font-weight:800;letter-spacing:.04em;cursor:pointer;min-height:64px}
 .new-game:hover{background:#246b5a}
 .new-game:focus-visible,.tile:focus-visible,.settings select:focus-visible{outline:3px solid #275caa;outline-offset:2px}
@@ -42,6 +48,7 @@ h1{font-size:clamp(30px,6vw,46px);line-height:1.15;letter-spacing:-.025em;margin
 .result[hidden]{display:none}
 .result-card{width:min(100%,390px);border-radius:24px;background:#fffdfa;padding:28px;text-align:center;box-shadow:0 20px 50px #122b2966}
 .result-card h2{font-size:clamp(32px,8vw,48px);color:#ad5b45;margin:0 0 18px}
+.result-card .result-reason{display:block;border:0;padding:0 0 12px;text-align:center;color:#637a6d;font-size:14px}
 .result-card p{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #dfebe4;padding:10px 0;margin:0;font-weight:700}
 .result-card p strong{font-variant-numeric:tabular-nums}
 .result-card button{margin-top:24px;min-height:52px;font-size:16px}
@@ -49,6 +56,6 @@ h1{font-size:clamp(30px,6vw,46px);line-height:1.15;letter-spacing:-.025em;margin
 @keyframes fall{from{transform:translateY(-28px);opacity:.25}to{transform:translateY(0);opacity:1}}
 @keyframes appear{from{transform:translateY(-35px) scale(.7);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
 @keyframes special-appear{0%{transform:scale(.3) rotate(-25deg);opacity:0}60%{transform:scale(1.25) rotate(8deg);opacity:1}100%{transform:scale(1) rotate(0)}}
-@media(max-width:600px){.game{padding-top:20px}.play-area{padding:14px;border-radius:22px}.dashboard{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.stat{padding:8px 10px;min-height:56px}.stat strong{font-size:21px}.new-game{grid-column:1/-1;min-height:44px;font-size:12px}.board-frame{padding:6px;border-radius:15px}.board{gap:3px}.tile{border-radius:9px;border-width:1px}.bird{font-size:clamp(22px,6.6vw,36px)}.message{font-size:12px;margin:13px 0}.help{font-size:12px}.tile.special .bird{font-size:clamp(17px,5vw,26px)}}
-@media(max-width:360px){.dashboard{gap:5px}.stat strong{font-size:19px}.board{gap:2px}.bird{font-size:21px}.settings{font-size:13px;gap:7px}.settings select{padding:7px}}
+@media(max-width:600px){.game{padding-top:20px}.play-area{padding:14px;border-radius:22px}.dashboard{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.stat{padding:8px 10px;min-height:56px}.stat strong{font-size:21px}.new-game{grid-column:1/-1;min-height:44px;font-size:12px}.board-frame{padding:6px;border-radius:15px}.board{gap:3px}.tile{border-radius:9px;border-width:1px}.bird{font-size:clamp(22px,6.6vw,36px)}.message{font-size:12px;margin:13px 0}.help{font-size:12px}.tile.special .bird{font-size:clamp(17px,5vw,26px)}}
+@media(max-width:360px){.dashboard{gap:5px}.stat strong{font-size:19px}.board{gap:2px}.bird{font-size:21px}.settings{font-size:13px;gap:7px;padding:8px}.settings select{min-width:0;padding:7px 32px 7px 10px}.select-wrap::after{right:12px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}

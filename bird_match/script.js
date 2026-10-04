@@ -1,12 +1,13 @@
 "use strict";
 (() => {
-  const SIZE = 8, DURATION = 60, SPECIAL = -1, SWIPE_MIN = 18;
+  const SIZE = 8, SPECIAL = -1, SWIPE_MIN = 18;
+  // 時間制限モードは現在オフ: const DURATION = 60;
   const BIRDS = ["🐦", "🐤", "🐧", "🦉", "🦜", "🦩"];
   const NAMES = ["小鳥", "ひよこ", "ペンギン", "フクロウ", "オウム", "フラミンゴ"];
   const $ = id => document.getElementById(id);
   const boardElement = $("board"), countElement = $("bird-count"), resultElement = $("result");
-  let board = [], birdCount = 4, selected = null, busy = false, expired = false;
-  let score = 0, combo = 0, maxCombo = 0, cleared = 0, gameId = 0, deadline = 0, timer;
+  let board = [], birdCount = 4, selected = null, busy = false, gameOver = false;
+  let score = 0, combo = 0, maxCombo = 0, cleared = 0, gameId = 0;
   let pointerStart = null, suppressClick = false;
   const randomBird = () => Math.floor(Math.random() * birdCount);
   const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -69,14 +70,14 @@
   }
   function render(classes = {}) {
     boardElement.replaceChildren();
-    boardElement.classList.toggle("locked", busy || expired);
+    boardElement.classList.toggle("locked", busy || gameOver);
     const fragment = document.createDocumentFragment();
     board.forEach((bird, index) => {
       const cell = document.createElement("button");
       cell.type = "button";
       cell.className = `tile ${classes[index] || ""}${selected === index ? " selected" : ""}${bird === SPECIAL ? " special" : ""}`.trim();
       cell.dataset.index = String(index);
-      cell.disabled = expired || busy;
+      cell.disabled = gameOver || busy;
       const place = `${Math.floor(index / SIZE) + 1}行${index % SIZE + 1}列`;
       if (bird !== null) {
         cell.dataset.bird = String(bird);
@@ -117,24 +118,6 @@
     }
     render(classes);
   }
-  async function shuffleIfStuck(currentGame) {
-    if (hasMove(board) || expired) return false;
-    setMessage("動かせる場所がないのでシャッフルします！");
-    await pause(650);
-    if (currentGame !== gameId || expired) return false;
-    const original = board.slice();
-    let candidate = null;
-    for (let attempt = 0; attempt < 3000; attempt++) {
-      candidate = original.slice();
-      for (let i = candidate.length - 1; i > 0; i--) swap(candidate, i, Math.floor(Math.random() * (i + 1)));
-      if (!findMatches(candidate).matched.size && hasMove(candidate)) break;
-      candidate = null;
-    }
-    board = candidate || makeBoard();
-    render();
-    setMessage("シャッフルしました。続きをどうぞ！");
-    return true;
-  }
   async function resolveMatches(currentGame, initialChain = 0) {
     let chain = initialChain, madeSpecial = false, chainBonus = 0;
     while (currentGame === gameId) {
@@ -159,13 +142,11 @@
     }
     if (currentGame !== gameId) return;
     render();
-    if (expired) { finishGame(); return; }
-    const shuffled = await shuffleIfStuck(currentGame);
-    if (currentGame !== gameId || expired) { if (expired) finishGame(); return; }
-    if (!shuffled) setMessage(chain > 1 ? `${chain}連鎖！ コンボボーナス +${chainBonus}点。次の組み合わせを探しましょう。` : "次の組み合わせを探しましょう！");
+    if (!hasMove(board)) { finishGame(); return; }
+    setMessage(chain > 1 ? `${chain}連鎖！ コンボボーナス +${chainBonus}点。次の組み合わせを探しましょう。` : "次の組み合わせを探しましょう！");
   }
   async function trySwap(a, b) {
-    if (busy || expired || !adjacent(a, b)) return;
+    if (busy || gameOver || !adjacent(a, b)) return;
     busy = true;
     selected = null;
     const currentGame = gameId, aCell = boardElement.children[a], bCell = boardElement.children[b];
@@ -203,13 +184,12 @@
     if (currentGame === gameId) {
       busy = false;
       render();
-      if (expired) finishGame();
     }
   }
   function onBoardClick(event) {
     if (suppressClick) { suppressClick = false; event.preventDefault(); return; }
     const cell = event.target.closest(".tile");
-    if (!cell || busy || expired) return;
+    if (!cell || busy || gameOver) return;
     const index = Number(cell.dataset.index);
     if (selected === null) {
       selected = index;
@@ -229,7 +209,7 @@
   function onPointerDown(event) {
     suppressClick = false;
     const cell = event.target.closest(".tile");
-    if (!cell || busy || expired || event.button > 0) return;
+    if (!cell || busy || gameOver || event.button > 0) return;
     pointerStart = { id: event.pointerId, index: Number(cell.dataset.index), x: event.clientX, y: event.clientY };
   }
   function onPointerUp(event) {
@@ -241,44 +221,45 @@
     if (distance < 4) return;
     suppressClick = true;
     if (distance < SWIPE_MIN) return;
-    if (busy || expired || Math.max(Math.abs(dx), Math.abs(dy)) < Math.min(Math.abs(dx), Math.abs(dy)) * 1.25) return;
+    if (busy || gameOver || Math.max(Math.abs(dx), Math.abs(dy)) < Math.min(Math.abs(dx), Math.abs(dy)) * 1.25) return;
     const b = Math.abs(dx) > Math.abs(dy) ? index + Math.sign(dx) : index + Math.sign(dy) * SIZE;
     if (b >= 0 && b < SIZE * SIZE && adjacent(index, b)) void trySwap(index, b);
   }
-  function updateTime() {
-    const remaining = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
-    $("time").textContent = String(remaining);
-    $("time").parentElement.classList.toggle("urgent", remaining <= 10);
-    if (remaining === 0 && !expired) {
-      expired = true;
-      clearInterval(timer);
-      pointerStart = null;
-      selected = null;
-      render();
-      if (!busy) finishGame();
-    }
-  }
+  /*
+   * 時間制限モードは現在オフ。再導入時は TIME 表示と開始時のタイマー設定も戻す。
+   * const DURATION = 60;
+   * let deadline, timer;
+   * function updateTime() {
+   *   const remaining = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+   *   $("time").textContent = String(remaining);
+   *   if (remaining === 0) finishGame();
+   * }
+   * startGame 内: deadline = Date.now() + DURATION * 1000;
+   * startGame 内: timer = setInterval(updateTime, 100);
+   */
   function finishGame() {
-    if (!expired || !resultElement.hidden) return;
+    if (gameOver) return;
+    gameOver = true;
+    selected = pointerStart = null;
+    setMessage("動かせる場所がなくなりました。ゲーム終了です！");
     $("final-score").textContent = score.toLocaleString("ja-JP");
     $("final-combo").textContent = String(maxCombo);
     $("final-cleared").textContent = String(cleared);
+    render();
     resultElement.hidden = false;
     $("play-again").focus();
   }
   function startGame() {
     gameId++;
-    clearInterval(timer);
+    // 時間制限モードは現在オフ: clearInterval(timer);
     birdCount = Number(countElement.value);
     board = makeBoard();
     selected = pointerStart = null;
-    suppressClick = busy = expired = false;
+    suppressClick = busy = gameOver = false;
     score = combo = maxCombo = cleared = 0;
     resultElement.hidden = true;
     updateStats();
-    deadline = Date.now() + DURATION * 1000;
-    updateTime();
-    timer = setInterval(updateTime, 100);
+    // 時間制限モードは現在オフ: deadline / updateTime / setInterval は使用しない。
     render();
     setMessage("鳥を1羽選ぶか、上下左右にドラッグ・スワイプしてください。");
   }
