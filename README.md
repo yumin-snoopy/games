@@ -2,7 +2,7 @@
 
 ブラウザで遊べるミニゲームをまとめたリポジトリです。
 
-テトリス・オセロ・2048・ことりマージ・とりとり大作戦を収録しています。
+テトリス・オセロ・2048・ことりマージ・とりとり大作戦・Lights Outを収録しています。
 
 ## ゲーム一覧
 
@@ -37,6 +37,14 @@ PC・スマートフォンで1ステージを最後まで遊べます。HTML / C
 
 操作方法・設定・ファイル構成は [bird_battle/README.md](bird_battle/README.md) をご覧ください。
 
+### Lights Out（ライトアウト）
+
+5×5のライトをすべて消すパズルゲームです。マスを押すと、そのマスと上下左右が切り替わります。
+
+[Lights Outを遊ぶ](https://yumin-snoopy.github.io/games/lights_out/)
+
+遊び方と操作方法は [lights_out/README.md](lights_out/README.md) をご覧ください。
+
 ## フォルダ構成
 
 ```text
@@ -57,6 +65,12 @@ games
 │  ├─ index.html
 │  ├─ style.css
 │  └─ script.js
+│
+├─ lights_out
+│  ├─ index.html
+│  ├─ style.css
+│  ├─ script.js
+│  └─ README.md
 │
 ├─ テトリス
 │  ├─ index.html

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff9ed">
+  <meta name="description" content="5×5のライトをすべて消すパズルゲーム、Lights Out。クリックやタップで気軽に遊べます。">
+  <title>Lights Out | ゲームひろば</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="./script.js" defer></script>
+</head>
+<body>
+  <main class="game">
+    <header class="heading">
+      <p class="eyebrow">ひらめきパズル</p>
+      <h1>Lights Out</h1>
+      <p class="lead">すべてのライトを消そう！</p>
+      <p class="help">マスを押すと、そのマスと上下左右のライトが切り替わります。</p>
+    </header>
+
+    <section class="play-area" aria-label="Lights Out のゲーム">
+      <div class="board-frame">
+        <div id="board" class="board" role="group" aria-label="5行5列のライト"></div>
+      </div>
+
+      <div class="status" aria-label="ゲームの記録">
+        <div class="status-item"><span class="status-label">手数</span><strong id="move-count">0</strong></div>
+        <div class="status-item"><span class="status-label">経過時間</span><strong id="elapsed-time">00:00</strong></div>
+      </div>
+
+      <div class="actions">
+        <button id="restart-button" class="action-button secondary" type="button">最初から</button>
+        <button id="new-button" class="action-button primary" type="button">新しいゲーム</button>
+      </div>
+      <p id="announcement" class="sr-only" role="status" aria-live="polite"></p>
+    </section>
+  </main>
+
+  <div id="clear-overlay" class="clear-overlay" hidden>
+    <section class="clear-card" role="dialog" aria-modal="true" aria-labelledby="clear-title" aria-describedby="clear-description">
+      <div class="clear-sparkle" aria-hidden="true">✦</div>
+      <h2 id="clear-title">CLEAR！</h2>
+      <p id="clear-description">すべてのライトが消えました！</p>
+      <div class="clear-results">
+        <p>クリアまでの手数 <strong id="final-moves">0</strong></p>
+        <p>クリア時間 <strong id="final-time">00:00</strong></p>
+      </div>
+      <button id="play-again-button" class="action-button primary" type="button">もう一度遊ぶ</button>
+    </section>
+  </div>
+</body>
+</html>

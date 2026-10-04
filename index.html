@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#faf7ef">
-    <meta name="description" content="テトリス・オセロ・2048・ことりマージ・とりとり大作戦をブラウザで楽しめるゲーム一覧です。好きなゲームを選んで遊ぼう！">
+    <meta name="description" content="テトリス・オセロ・2048・ことりマージ・とりとり大作戦・Lights Outをブラウザで楽しめるゲーム一覧です。好きなゲームを選んで遊ぼう！">
   <title>ゲームひろば | Games</title>
   <style>
     * { box-sizing: border-box; }
@@ -21,6 +21,10 @@
     .othello { background: #e2eee4; }
     .numbers { background: #f6ead3; }
     .birds { background: linear-gradient(135deg, #e5f3f7, #fce5ed); }
+    .lights { background: #e3edf1; }
+    .light-preview { display: grid; grid-template-columns: repeat(3, 29px); gap: 7px; transform: rotate(-7deg); }
+    .light-preview span { width: 29px; height: 29px; border: 2px solid #b7c8d0; border-radius: 8px; background: #c9d6dc; }
+    .light-preview .on { border-color: #e7a536; background: #ffdb70; box-shadow: 0 0 13px #e5ac51; }
     svg { width: 120px; height: 120px; }
     .number-tiles { display: grid; grid-template-columns: repeat(2, 50px); gap: 7px; transform: rotate(-6deg); }
     .number-tiles span { display: grid; place-items: center; width: 50px; height: 50px; border-radius: 9px; font-size: 24px; font-weight: 800; background: #faf1df; }
@@ -108,6 +112,14 @@
         <h2>とりとり大作戦</h2>
         <p class="description">エサをためて、鳥たちを出撃！すずめ・ふくろう・わしと巣を守り、草原の向こうを目指そう。</p>
         <a class="play" href="./bird_battle/" aria-label="とりとり大作戦で遊ぶ">遊ぶ <span aria-hidden="true">→</span></a>
+      </article>
+      <article class="card">
+        <div class="preview lights" aria-hidden="true">
+          <div class="light-preview"><span class="on"></span><span></span><span class="on"></span><span></span><span class="on"></span><span></span><span class="on"></span><span></span><span class="on"></span></div>
+        </div>
+        <h2>Lights Out</h2>
+        <p class="description">マスを押すと上下左右も切り替わる。5×5のライトをすべて消す、ひらめきパズル！</p>
+        <a class="play" href="./lights_out/" aria-label="Lights Outで遊ぶ">遊ぶ <span aria-hidden="true">→</span></a>
       </article>
     </section>
     <p class="note">ダウンロード不要。ブラウザでそのまま遊べます。<br>操作方法は、それぞれのゲーム画面をご覧ください。</p>
