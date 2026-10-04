@@ -88,7 +88,7 @@
       const place = `${Math.floor(index / SIZE) + 1}行${index % SIZE + 1}列`;
       if (bird !== null) {
         cell.dataset.bird = String(bird);
-        cell.setAttribute("aria-label", `${place} ${bird === SPECIAL ? "レインボー鳥" : NAMES[bird]}${selected === index ? " 選択中" : ""}`);
+        cell.setAttribute("aria-label", `${place} ${bird === SPECIAL ? "虹の卵" : NAMES[bird]}${selected === index ? " 選択中" : ""}`);
         const icon = document.createElement("span");
         icon.className = bird === SPECIAL ? "bird rainbow-symbol" : "bird";
         icon.textContent = bird === SPECIAL ? "✦" : BIRDS[bird];
@@ -143,7 +143,7 @@
       const specialIndex = canCreateSpecial(chain, madeSpecial, board) ? [...matched][Math.floor(Math.random() * matched.size)] : null;
       const comboLabel = chain === 4 ? " 高得点コンボ！" : chain === 3 ? " コンボボーナス！" : "";
       setMessage(specialIndex !== null
-        ? `${chain} COMBO！ SPECIAL BIRD！ ボーナス +${bonus}`
+        ? `${chain} COMBO！ 虹の卵が出現！ ボーナス +${bonus}`
         : chain === SPECIAL_COMBO ? `${chain} COMBO！`
         : chain > 1 ? `${chain} COMBO！${comboLabel} ボーナス +${bonus}` : `${matched.size}羽そろいました！`);
       render(Object.fromEntries([...matched].map(index => [index, "clearing"])));
@@ -187,7 +187,7 @@
       const targetCount = matched.size - 1;
       // The rainbow bird is consumed with its target birds, freeing a slot under the three-bird cap.
       addClearScore(targetCount + 1, targetCount * 100, 1);
-      setMessage(`レインボー鳥！ ${NAMES[target]}を${targetCount}羽消去！`);
+      setMessage(`虹の卵！ ${NAMES[target]}を${targetCount}羽消去！`);
       render(Object.fromEntries([...matched].map(index => [index, "clearing"])));
       await pause(260);
       if (currentGame !== gameId) return;
@@ -213,7 +213,7 @@
     if (selected === null) {
       selected = index;
       if (board[index] === SPECIAL) {
-        setMessage("レインボー鳥！ 隣の鳥と交換しよう！");
+        setMessage("虹の卵！ 隣の鳥と交換しよう！");
         const currentGame = gameId;
         setTimeout(() => {
           if (currentGame === gameId && selected === index && board[index] === SPECIAL && !busy && !gameOver)
