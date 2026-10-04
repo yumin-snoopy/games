@@ -112,9 +112,30 @@ h1 {
 .light:active { transform: scale(.95); }
 .light:focus-visible, .action-button:focus-visible { outline: 3px solid #2c728b; outline-offset: 3px; }
 
+.light.is-hint {
+  position: relative;
+  z-index: 1;
+  border-color: #00788c;
+  box-shadow: 0 0 0 4px #00a5b9, 0 0 18px 7px #43d6e5;
+  animation: hint-pulse .7s ease-in-out infinite alternate;
+}
+
+@keyframes hint-pulse {
+  to { box-shadow: 0 0 0 6px #00a5b980, 0 0 25px 10px #43d6e5; }
+}
+
+.hint-message {
+  margin: 14px 0 -6px;
+  color: #006b7d;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.hint-message[hidden] { display: none; }
+
 .status {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
   margin: 20px 0;
 }
@@ -130,7 +151,7 @@ h1 {
 .status-label { color: #625c50; font-size: 14px; font-weight: 700; }
 .status strong { color: #334c5a; font-size: 25px; font-variant-numeric: tabular-nums; }
 
-.actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 
 .action-button {
   min-height: 52px;
@@ -147,6 +168,8 @@ h1 {
 .action-button.primary:hover { background: #226473; }
 .action-button.secondary { border-color: #83a8ad; background: white; color: #255b68; }
 .action-button.secondary:hover { background: #edf7f7; }
+.action-button.hint-button { border-color: #e1b354; background: #fff4cf; color: #705016; }
+.action-button.hint-button:hover { background: #ffe9a8; }
 
 .clear-overlay {
   position: fixed;
@@ -186,14 +209,18 @@ h1 {
   white-space: nowrap;
 }
 
-@media (max-width: 380px) {
+@media (max-width: 450px) {
   .game { width: min(100% - 20px, 540px); }
   .help { font-size: 14px; }
   .play-area { border-radius: 20px; }
-  .actions { gap: 8px; }
+  .status { grid-template-columns: repeat(2, 1fr); }
+  .status-item:last-child { grid-column: 1 / -1; }
+  .actions { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .hint-button { grid-column: 1 / -1; }
   .action-button { padding-inline: 7px; font-size: 14px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .light { transition: none; }
+  .light.is-hint { animation: none; }
 }

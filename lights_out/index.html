@@ -22,15 +22,18 @@
       <div class="board-frame">
         <div id="board" class="board" role="group" aria-label="5行5列のライト"></div>
       </div>
+      <p id="hint-message" class="hint-message" hidden></p>
 
       <div class="status" aria-label="ゲームの記録">
         <div class="status-item"><span class="status-label">手数</span><strong id="move-count">0</strong></div>
         <div class="status-item"><span class="status-label">経過時間</span><strong id="elapsed-time">00:00</strong></div>
+        <div class="status-item"><span class="status-label">ヒント使用</span><strong id="hint-count">0回</strong></div>
       </div>
 
       <div class="actions">
         <button id="restart-button" class="action-button secondary" type="button">最初から</button>
         <button id="new-button" class="action-button primary" type="button">新しいゲーム</button>
+        <button id="hint-button" class="action-button hint-button" type="button">ヒント</button>
       </div>
       <p id="announcement" class="sr-only" role="status" aria-live="polite"></p>
     </section>
@@ -44,6 +47,7 @@
       <div class="clear-results">
         <p>クリアまでの手数 <strong id="final-moves">0</strong></p>
         <p>クリア時間 <strong id="final-time">00:00</strong></p>
+        <p>ヒント使用回数 <strong id="final-hints">0回</strong></p>
       </div>
       <button id="play-again-button" class="action-button primary" type="button">もう一度遊ぶ</button>
     </section>
