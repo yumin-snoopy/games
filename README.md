@@ -2,7 +2,7 @@
 
 ブラウザで遊べるミニゲームをまとめたリポジトリです。
 
-テトリス・オセロ・2048・ことりマージ・とりとり大作戦・Lights Out・Bird Match Puzzleを収録しています。
+テトリス・オセロ・2048・ことりマージ・とりとり大作戦・Lights Out・Bird Match Puzzle・数字つなぎパズル・シマエナガの色わけロジックを収録しています。
 
 ## ゲーム一覧
 
@@ -104,3 +104,11 @@ games
 必要に応じて、新しいゲームをこのリポジトリ内に追加していきます。
 
 リポジトリ直下の `index.html` のゲーム一覧から、各ゲームを直接開けます。
+
+### シマエナガの色わけロジック
+
+各行・各列・各色エリアにシマエナガを1羽ずつ置くロジックパズルです。5レベル、各3問で遊べます。
+
+[シマエナガの色わけロジックを遊ぶ](https://yumin-snoopy.github.io/games/shimaenaga_color_logic/)
+
+遊び方は [shimaenaga_color_logic/README.md](shimaenaga_color_logic/README.md) をご覧ください。
