@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f8f5f1">
-  <meta name="description" content="行・列・色エリアに1羽ずつ、シマエナガを置くロジックパズル。5つのレベルで遊べます。">
+  <meta name="description" content="行・列・色エリアに1羽ずつ、互いに接しないようシマエナガを置くロジックパズル。全10レベル。">
   <title>シマエナガの色わけロジック | Yumin Games</title>
-  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./style.css?v=20261010-1">
   <script src="../source-guard.js" defer></script>
-  <script src="./script.js?v=20261006-2" defer></script>
+  <script src="./script.js?v=20261010-1" defer></script>
 </head>
 <body>
   <main class="app">
@@ -24,6 +24,7 @@
     <section class="rule-card" aria-labelledby="rules-title">
       <h2 id="rules-title">あそびかた</h2>
       <p>各<strong>行</strong>・各<strong>列</strong>・同じ<strong>色のエリア</strong>に、シマエナガを<strong>1羽ずつ</strong>置きます。</p>
+      <p><strong>シマエナガ同士は接しない</strong>ようにします。上下左右も斜めも隣接できません。</p>
       <p class="cycle"><span>空白</span><span aria-hidden="true">→</span><span><span class="tiny-bird" aria-hidden="true">●</span> シマエナガ</span><span aria-hidden="true">→</span><span>×</span><span aria-hidden="true">→</span><span>空白</span></p>
       <p class="rule-note">マスを押すたびに切り替わります。×は「ここには置かない」の目印です。</p>
     </section>
@@ -33,10 +34,15 @@
         <label for="level-select">レベル</label>
         <select id="level-select">
           <option value="1">レベル1 · 4×4</option>
-          <option value="2">レベル2 · 5×5</option>
-          <option value="3">レベル3 · 6×6</option>
-          <option value="4">レベル4 · 7×7</option>
-          <option value="5">レベル5 · 8×8</option>
+          <option value="2">レベル2 · 4×4</option>
+          <option value="3">レベル3 · 5×5</option>
+          <option value="4">レベル4 · 5×5</option>
+          <option value="5">レベル5 · 6×6</option>
+          <option value="6">レベル6 · 6×6</option>
+          <option value="7">レベル7 · 7×7</option>
+          <option value="8">レベル8 · 7×7</option>
+          <option value="9">レベル9 · 8×8</option>
+          <option value="10">レベル10 · 8×8</option>
         </select>
         <span id="puzzle-number" class="puzzle-number"></span>
       </div>
@@ -46,7 +52,7 @@
         <p id="timer" class="timer">00:00</p>
       </div>
       <div id="board" class="board" role="group" aria-label="パズル盤面"></div>
-      <p id="status" class="status" role="status" aria-live="polite">行・列・色エリアを見ながら、置いてみましょう。</p>
+      <p id="status" class="status" role="status" aria-live="polite">行・列・色エリアを見ながら、接しないように置いてみましょう。</p>
       <div id="clear-panel" class="clear-panel" hidden>
         <strong>クリア！ シマエナガがそろいました ✨</strong>
         <span id="clear-time"></span>
@@ -62,4 +68,3 @@
   </main>
 </body>
 </html>
-
