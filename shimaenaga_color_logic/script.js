@@ -185,8 +185,14 @@
     }
   }
   function cycleCell(index) {
-    if (cleared) return;
-    startTimer();
+    if (cleared) {
+      cleared = false;
+      clearPanel.hidden = true;
+      startedAt = Date.now() - elapsed * 1000;
+      tickHandle = setInterval(updateTime, 1000);
+    } else {
+      startTimer();
+    }
     states[index] = (states[index] + 1) % 3;
     hintIndex = -1;
     cells.forEach((_, i) => renderCell(i));
