@@ -66,7 +66,7 @@
     if (sameType.length) choices = sameType;
     const tier = desiredTier();
     // 70%は目標の難易度。残りは前後の級を混ぜる。
-    const wanted = Math.random() < .7 ? tier : pick([1, 2, 3]);
+    const wanted = state.used.size === 0 || Math.random() < .7 ? tier : pick([1, 2, 3]);
     const sameTier = choices.filter(q => q.item.tier === wanted);
     if (sameTier.length) choices = sameTier;
     else {
