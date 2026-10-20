@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f5ed">
+  <meta name="description" content="四字熟語の穴埋め・意味・読み方を楽しむ、時間制限なしの四択クイズ。">
+  <title>四字熟語クイズ | Yumin Games</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="data.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="site-head">
+      <p class="eyebrow">言葉を楽しむ、脳のひととき</p>
+      <h1>四字熟語クイズ</h1>
+      <p class="lead">穴埋め・意味・読み方。自分のペースで、じっくり挑戦しましょう。</p>
+      <div class="text-size" role="group" aria-label="文字の大きさ">
+        <span>文字の大きさ</span>
+        <button id="size-normal" type="button" aria-pressed="true">標準</button>
+        <button id="size-large" type="button" aria-pressed="false">大きい</button>
+      </div>
+    </header>
+
+    <section id="start-screen" class="panel">
+      <h2>挑戦する難易度を選ぶ</h2>
+      <p>最初は初級から始める設定です。正解が増えると、難しい問題も登場します。</p>
+      <fieldset class="levels">
+        <legend>開始する難易度</legend>
+        <label><input type="radio" name="start-level" value="1" checked> 初級から挑戦</label>
+        <label><input type="radio" name="start-level" value="2"> 中級から挑戦</label>
+        <label><input type="radio" name="start-level" value="3"> 上級から挑戦</label>
+      </fieldset>
+      <p class="small-note">ライフは3個。時間制限はありません。</p>
+      <p id="bank-count" class="small-note"></p>
+      <p id="best-start" class="best"></p>
+      <button id="start-button" class="primary" type="button">クイズを始める</button>
+    </section>
+
+    <section id="quiz-screen" class="panel" hidden>
+      <div class="status" aria-label="プレイ状況">
+        <span id="question-number">第1問</span>
+        <span id="correct-count">現在の正解数 0</span>
+        <span id="lives" aria-label="ライフ3個">ライフ ♥♥♥</span>
+      </div>
+      <p id="question-kind" class="kind"></p>
+      <h2 id="question-text" class="question"></h2>
+      <div id="choices" class="choices" role="group" aria-label="選択肢"></div>
+      <div id="feedback" class="feedback" aria-live="polite" hidden>
+        <h3 id="result-heading"></h3>
+        <p id="best-update" class="best" hidden>自己ベスト更新！</p>
+        <p id="answer-word" class="answer-word"></p>
+        <p id="answer-meaning"></p>
+        <button id="next-button" class="primary" type="button">次の問題へ</button>
+      </div>
+    </section>
+
+    <section id="end-screen" class="panel" hidden>
+      <h2 id="end-title"></h2>
+      <p id="end-message"></p>
+      <div id="summary" class="summary"></div>
+      <p id="best-end" class="best"></p>
+      <div class="end-actions">
+        <button id="retry-button" class="primary" type="button">もう一度挑戦する</button>
+        <button id="review-button" class="secondary" type="button" hidden>間違えた問題を復習する</button>
+      </div>
+    </section>
+
+    <section id="review-screen" class="panel" hidden>
+      <h2>間違えた問題の復習</h2>
+      <ol id="review-list" class="review-list"></ol>
+      <button id="review-back" class="secondary" type="button">結果に戻る</button>
+    </section>
+    <footer><a href="../">ゲーム一覧に戻る</a></footer>
+  </main>
+</body>
+</html>
+

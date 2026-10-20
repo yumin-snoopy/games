@@ -1,0 +1,55 @@
+:root{color-scheme:light;--ink:#263e35;--green:#285d4a;--cream:#f8f5ed;--line:#d4d9ca;--sakura:#a45166;--font-scale:1}
+*{box-sizing:border-box}
+html{font-size:calc(18px * var(--font-scale))}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",system-ui,sans-serif;line-height:1.7}
+button,input{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:4px solid #b37528;outline-offset:3px}
+[hidden]{display:none!important}
+.shell{width:min(100% - 28px,820px);margin:auto;padding:28px 0 45px}
+.site-head{text-align:center;padding:8px 0 24px}
+.eyebrow{color:var(--sakura);font-weight:800;letter-spacing:.12em;margin:0}
+h1{font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:clamp(2rem,7vw,3.2rem);line-height:1.25;margin:.25em 0}
+.lead{margin:.6em auto 1em;max-width:34em}
+.text-size{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;font-size:.95rem}
+.text-size button{border:2px solid var(--line);background:#fff;border-radius:9px;padding:5px 15px;min-height:44px}
+.text-size button[aria-pressed=true]{border-color:var(--green);background:#e7f0e9;font-weight:800}
+.panel{background:#fff;border:1px solid var(--line);border-top:6px solid var(--green);border-radius:16px;padding:clamp(20px,5vw,38px);box-shadow:0 6px 20px #344b3b0d}
+.panel h2{font-size:1.5rem;line-height:1.4;margin:0 0 .6em}
+.levels{border:0;margin:18px 0;padding:0;display:grid;gap:12px}
+.levels legend{font-weight:800;margin-bottom:12px}
+.levels label{display:flex;align-items:center;gap:12px;border:2px solid var(--line);border-radius:12px;padding:10px 14px;min-height:64px;cursor:pointer}
+.levels label:has(input:checked){border-color:var(--green);background:#f1f7f1}
+.levels input{width:23px;height:23px;accent-color:var(--green);flex:none}
+.small-note{font-size:.94rem}
+.best{color:#8d4256;font-weight:800}
+.primary,.secondary{display:inline-block;min-height:58px;border-radius:12px;padding:10px 24px;font-weight:800}
+.primary{border:2px solid var(--green);background:var(--green);color:#fff}
+.primary:hover{background:#194b39}
+.secondary{border:2px solid var(--green);background:#fff;color:var(--green)}
+.status{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 18px;border-bottom:2px solid var(--line);padding-bottom:15px;font-weight:800}
+#lives{color:#a03b53;white-space:nowrap}
+.kind{display:inline-block;color:var(--green);font-weight:800;margin:23px 0 4px}
+.question{font-size:clamp(28px,5vw,36px)!important;line-height:1.55;overflow-wrap:anywhere}
+.choices{display:grid;gap:13px;margin:22px 0}
+.choice{width:100%;min-height:74px;border:2px solid #a9b9ac;border-radius:12px;background:#fff;text-align:left;padding:12px 18px;color:var(--ink);font-size:clamp(22px,4vw,28px);font-weight:700;line-height:1.45;overflow-wrap:anywhere}
+.choice:hover:not(:disabled){background:#f2f8f2;border-color:var(--green)}
+.choice:disabled{cursor:default}
+.choice.correct{border-color:#26744f;background:#e5f4e9}
+.choice.wrong{border-color:#b74d62;background:#fbe9ec}
+.choice .letter{display:inline-grid;place-items:center;width:1.6em;height:1.6em;border-radius:50%;margin-right:.65em;background:#edf1e9;color:var(--green);font-size:.77em}
+.feedback{border-top:2px solid var(--line);padding-top:20px}
+.feedback h3{font-size:1.35rem;margin:0}
+.answer-word{font-size:1.3rem;font-weight:800;margin-bottom:0}
+.feedback p{margin:.5em 0 1em}
+.summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0}
+.summary div{background:#f2f6ef;border-radius:10px;padding:12px}
+.summary strong{display:block;font-size:1.6rem;color:var(--green)}
+.end-actions{display:flex;flex-wrap:wrap;gap:12px}
+.review-list{padding-left:1.5em}
+.review-list li{border-bottom:1px solid var(--line);padding:12px 0}
+.review-list p{margin:.2em 0}
+footer{text-align:center;margin-top:24px}
+footer a{color:var(--green);font-weight:700}
+@media(max-width:520px){.shell{width:min(100% - 20px,820px);padding-top:15px}.status{font-size:.88rem}.choice{min-height:76px;padding:10px 13px}.summary{gap:8px}}
+
