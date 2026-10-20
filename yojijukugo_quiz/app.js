@@ -57,10 +57,17 @@
     const remaining = QUESTIONS.filter(q => !used.has(q.id));
     if (!remaining.length) return endGame(true);
     if (history.size >= QUESTIONS.length) history = new Set();
-    const fresh = remaining.filter(q => !history.has(q.id));
-    let choices = fresh.length ? fresh : remaining;
-    const differentWord = choices.filter(q => q.item.id !== state.lastWord);
-    if (differentWord.length) choices = differentWord;
+    const safe = remaining.filter(candidate => {
+      if (candidate.item.id === state.lastWord) return false;
+      const after = remaining.filter(q => q.id !== candidate.id);
+      const counts = new Map();
+      for (const q of after) counts.set(q.item.id, (counts.get(q.item.id) || 0) + 1);
+      return [...counts].every(([wordId, count]) =>
+        count <= (wordId === candidate.item.id ? Math.floor(after.length / 2) : Math.ceil(after.length / 2)));
+    });
+    const eligible = safe.length ? safe : remaining;
+    const fresh = eligible.filter(q => !history.has(q.id));
+    let choices = fresh.length ? fresh : eligible;
     const wantedType = state.typeOrder[state.used.size % TYPES.length];
     const sameType = choices.filter(q => q.type === wantedType);
     if (sameType.length) choices = sameType;
