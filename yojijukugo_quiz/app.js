@@ -2,7 +2,7 @@
   "use strict";
   const $ = id => document.getElementById(id);
   const DATA = IDIOM_DATA;
-  const TYPES = ["blank", "meaning", "reading"];
+  const TYPES = ["blankEnd", "blankStart", "meaning"];
   const LABELS = ["A", "B", "C", "D"];
   const QUESTIONS = DATA.flatMap(item => TYPES.map(type => ({ id: `${item.id}:${type}`, item, type })));
   const storage = {
@@ -25,19 +25,6 @@
     return a;
   }
   function pick(source) { return source[Math.floor(Math.random() * source.length)]; }
-  function distance(a, b) {
-    const row = Array.from({ length: b.length + 1 }, (_, i) => i);
-    for (let i = 1; i <= a.length; i++) {
-      let previous = row[0];
-      row[0] = i;
-      for (let j = 1; j <= b.length; j++) {
-        const old = row[j];
-        row[j] = Math.min(row[j] + 1, row[j - 1] + 1, previous + (a[i - 1] === b[j - 1] ? 0 : 1));
-        previous = old;
-      }
-    }
-    return row[b.length];
-  }
   function show(screen) {
     for (const id of ["start-screen", "quiz-screen", "end-screen", "review-screen"]) $(id).hidden = id !== screen;
     window.scrollTo({ top: 0, behavior: "instant" });
@@ -89,18 +76,16 @@
   }
   function distractors(question) {
     const { item, type } = question;
-    if (type === "blank") {
-      const correct = item.word.slice(2);
-      const possible = [...new Set(DATA.map(row => row.word.slice(2)))]
-        .filter(s => s !== correct && s.length === 2 && !DATA.some(row => row.word === item.word.slice(0, 2) + s));
+    if (type === "blankEnd" || type === "blankStart") {
+      const start = type === "blankStart";
+      const correct = start ? item.word.slice(0, 2) : item.word.slice(2);
+      const fixed = start ? item.word.slice(2) : item.word.slice(0, 2);
+      const possible = [...new Set(DATA.map(row => start ? row.word.slice(0, 2) : row.word.slice(2)))]
+        .filter(part => part !== correct && part.length === 2
+          && !DATA.some(row => row.word === (start ? part + fixed : fixed + part)));
       return shuffle(possible).sort((a, b) =>
         [...b].filter((char, i) => char === correct[i]).length -
         [...a].filter((char, i) => char === correct[i]).length).slice(0, 3);
-    }
-    if (type === "reading") {
-      return [...new Set(shuffle(DATA.filter(row => row.id !== item.id)).map(row => row.reading))]
-        .filter(s => s !== item.reading)
-        .sort((a, b) => distance(a, item.reading) - distance(b, item.reading)).slice(0, 3);
     }
     const meaningGroups = [
       ["一石二鳥", "一挙両得"],
@@ -117,8 +102,8 @@
       .slice(0, 3).map(row => row.word);
   }
   function makeChoices(question) {
-    const answer = question.type === "blank" ? question.item.word.slice(2)
-      : question.type === "reading" ? question.item.reading : question.item.word;
+    const answer = question.type === "blankEnd" ? question.item.word.slice(2)
+      : question.type === "blankStart" ? question.item.word.slice(0, 2) : question.item.word;
     const values = shuffle([answer, ...distractors(question)]);
     if (values.length !== 4 || new Set(values).size !== 4) throw Error("選択肢の生成に失敗しました");
     return { answer, values };
@@ -129,13 +114,13 @@
     state.answer = answer;
     $("question-number").textContent = `第${state.used.size}問`;
     $("correct-count").textContent = `現在の正解数 ${state.correct}`;
-    $("lives").textContent = `ライフ ${"♥".repeat(state.lives)}${"♡".repeat(3 - state.lives)}`;
+    $("lives").textContent = `ライフ ${"♥".repeat(state.lives)}${"♡".repeat(1 - state.lives)}`;
     $("lives").setAttribute("aria-label", `ライフ残り${state.lives}個`);
-    $("question-kind").textContent = { blank: "穴埋め問題", meaning: "意味から選ぶ問題", reading: "読み方問題" }[q.type];
-    $("question-text").textContent = q.type === "blank"
+    $("question-kind").textContent = q.type === "meaning" ? "意味から選ぶ問題" : "穴埋め問題";
+    $("question-text").textContent = q.type === "blankEnd"
       ? `「${q.item.word.slice(0, 2)}□□」の空欄に入る二文字は？`
-      : q.type === "reading"
-        ? `「${q.item.word}」の正しい読み方は？`
+      : q.type === "blankStart"
+        ? `「□□${q.item.word.slice(2)}」の空欄に入る二文字は？`
         : `「${q.item.meaning}」を表す四字熟語は？`;
     const choices = $("choices");
     choices.replaceChildren();
@@ -182,7 +167,7 @@
       if (button.textContent.slice(1) === state.answer) button.classList.add("correct");
     });
     $("correct-count").textContent = `現在の正解数 ${state.correct}`;
-    $("lives").textContent = `ライフ ${"♥".repeat(state.lives)}${"♡".repeat(3 - state.lives)}`;
+    $("lives").textContent = `ライフ ${"♥".repeat(state.lives)}${"♡".repeat(1 - state.lives)}`;
     $("lives").setAttribute("aria-label", `ライフ残り${state.lives}個`);
     $("answer-word").textContent = `${q.item.word}（${q.item.reading}）`;
     $("answer-meaning").textContent = q.item.meaning;
@@ -216,7 +201,7 @@
   function startGame() {
     const checked = document.querySelector('input[name="start-level"]:checked');
     state = {
-      startTier: Number(checked.value), lives: 3, correct: 0,
+      startTier: Number(checked.value), lives: 1, correct: 0,
       streak: 0, topStreak: 0, used: new Set(), wrong: [],
       question: null, answer: "", answered: false, lastWord: -1,
       typeOrder: shuffle(TYPES)
@@ -231,8 +216,8 @@
       const asked = document.createElement("p");
       const word = document.createElement("strong");
       const meaning = document.createElement("p");
-      asked.textContent = q.type === "blank" ? `出題：${q.item.word.slice(0, 2)}□□`
-        : q.type === "reading" ? `出題：「${q.item.word}」の読み方`
+      asked.textContent = q.type === "blankEnd" ? `出題：${q.item.word.slice(0, 2)}□□`
+        : q.type === "blankStart" ? `出題：□□${q.item.word.slice(2)}`
           : `出題：${q.item.meaning}`;
       word.textContent = `${q.item.word}（${q.item.reading}）`;
       meaning.textContent = q.item.meaning;

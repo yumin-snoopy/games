@@ -22,9 +22,13 @@ const counts = [1, 2, 3].map(tier => data.filter(row => row.tier === tier).lengt
 if (data.length * 3 < 300) errors.push("問題数が300未満");
 if (counts.some(count => count < 20)) errors.push("難易度別の語数が不足");
 for (const row of data) {
-  const others = [...new Set(data.map(item => item.word.slice(2)))]
-    .filter(suffix => suffix !== row.word.slice(2) && !words.has(row.word.slice(0, 2) + suffix));
-  if (others.length < 3) errors.push(`穴埋めの誤答候補が不足: ${row.word}`);
+  for (const start of [false, true]) {
+    const correct = start ? row.word.slice(0, 2) : row.word.slice(2);
+    const fixed = start ? row.word.slice(2) : row.word.slice(0, 2);
+    const others = [...new Set(data.map(item => start ? item.word.slice(0, 2) : item.word.slice(2)))]
+      .filter(part => part !== correct && !words.has(start ? part + fixed : fixed + part));
+    if (others.length < 3) errors.push(`穴埋めの誤答候補が不足: ${row.word}（${start ? "前半" : "後半"}）`);
+  }
 }
 console.log(`収録 ${data.length}語 / ${data.length * 3}問 (初級${counts[0]}語・中級${counts[1]}語・上級${counts[2]}語)`);
 if (errors.length) {

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f8f5ed">
-  <meta name="description" content="四字熟語の穴埋め・意味・読み方を楽しむ、時間制限なしの四択クイズ。">
+  <meta name="description" content="四字熟語の穴埋め・意味を楽しむ、時間制限なしの四択クイズ。">
   <title>四字熟語クイズ | Yumin Games</title>
   <link rel="stylesheet" href="style.css">
   <script src="data.js" defer></script>
@@ -15,7 +15,7 @@
     <header class="site-head">
       <p class="eyebrow">言葉を楽しむ、脳のひととき</p>
       <h1>四字熟語クイズ</h1>
-      <p class="lead">穴埋め・意味・読み方。自分のペースで、じっくり挑戦しましょう。</p>
+      <p class="lead">穴埋め・意味の四択問題。自分のペースで、じっくり挑戦しましょう。</p>
       <div class="text-size" role="group" aria-label="文字の大きさ">
         <span>文字の大きさ</span>
         <button id="size-normal" type="button" aria-pressed="true">標準</button>
@@ -32,7 +32,7 @@
         <label><input type="radio" name="start-level" value="2"> 中級から挑戦</label>
         <label><input type="radio" name="start-level" value="3"> 上級から挑戦</label>
       </fieldset>
-      <p class="small-note">ライフは3個。時間制限はありません。</p>
+      <p class="small-note">1問でも間違えたら終了です。時間制限はありません。</p>
       <p id="bank-count" class="small-note"></p>
       <p id="best-start" class="best"></p>
       <button id="start-button" class="primary" type="button">クイズを始める</button>
@@ -42,7 +42,7 @@
       <div class="status" aria-label="プレイ状況">
         <span id="question-number">第1問</span>
         <span id="correct-count">現在の正解数 0</span>
-        <span id="lives" aria-label="ライフ3個">ライフ ♥♥♥</span>
+        <span id="lives" aria-label="ライフ残り1個">ライフ ♥</span>
       </div>
       <p id="question-kind" class="kind"></p>
       <h2 id="question-text" class="question"></h2>
