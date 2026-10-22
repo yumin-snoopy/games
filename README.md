@@ -1,5 +1,4 @@
 - [ゲーム一覧](https://yumin-snoopy.github.io/games/index.html)
-- [テトリス](https://yumin-snoopy.github.io/games/テトリス/index.html)
 - [オセロ](https://yumin-snoopy.github.io/games/オセロ/index.html)
 - [2048](https://yumin-snoopy.github.io/games/2048/index.html)
 - [ことりマージ](https://yumin-snoopy.github.io/games/bird_merge/index.html)
