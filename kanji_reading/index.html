@@ -7,7 +7,7 @@
   <meta name="description" content="大人のための難読漢字四択クイズ。難易度とジャンルを選び、自分のペースで挑戦できます。">
   <title>難読漢字チャレンジ</title>
   <link rel="stylesheet" href="style.css">
-  <script src="questions.js" defer></script>
+  <script src="questions.js?v=500-20261023" defer></script>
   <script src="script.js" defer></script>
 </head>
 <body>
@@ -15,6 +15,7 @@
     <header class="masthead"><p class="eyebrow">KANJI READING QUIZ</p><h1>難読漢字チャレンジ</h1><p>知っているつもりの漢字にも、思いがけない読み方が。<br>ゆっくり考えて、読みを選んでください。</p></header>
     <section id="setup" class="panel" aria-labelledby="setup-title">
       <h2 id="setup-title">挑戦する問題を選ぶ</h2>
+      <p class="support">全500問の漢字読みクイズです。</p>
       <div class="fields"><label>難易度<select id="difficulty"><option value="中級" selected>中級（漢検2級程度）</option><option value="上級">上級（漢検準1級程度）</option><option value="超難問">超難問（漢検1級程度）</option><option>おまかせ</option></select></label><label>ジャンル<select id="category"><option>すべて</option><option>動物・鳥・魚</option><option>植物・花</option><option>食べ物</option><option>難読熟語・その他</option></select></label></div>
       <p class="support">漢検の級は難しさの目安です。各語の正式な出題級を示すものではありません。</p>
       <p id="available" class="support"></p>
