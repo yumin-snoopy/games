@@ -1,5 +1,5 @@
 - [ゲーム一覧](https://yumin-snoopy.github.io/games/index.html)
-- [オセロ](https://yumin-snoopy.github.io/games/オセロ/index.html)
+- [リバーシ](https://yumin-snoopy.github.io/games/reversi/index.html)
 - [2048](https://yumin-snoopy.github.io/games/2048/index.html)
 - [ことりマージ](https://yumin-snoopy.github.io/games/bird_merge/index.html)
 - [とりとり大作戦](https://yumin-snoopy.github.io/games/bird_battle/index.html)
@@ -9,5 +9,4 @@
 - [シマエナガの色わけロジック](https://yumin-snoopy.github.io/games/shimaenaga_color_logic/index.html)
 - [麻雀・待ち牌当てクイズ](https://yumin-snoopy.github.io/games/mahjong_wait_quiz/index.html)
 - [四字熟語クイズ](https://yumin-snoopy.github.io/games/yojijukugo_quiz/index.html)
-- [難読漢字チャレンジ](https://yumin-snoopy.github.io/games/kanji_reading/index.html)
 
