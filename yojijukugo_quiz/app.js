@@ -2,15 +2,15 @@
   "use strict";
   const $ = id => document.getElementById(id);
   const DATA = IDIOM_DATA;
-  const TYPES = ["blankEnd", "blankStart", "meaning"];
+  const TYPES = ["blankEnd", "blankStart"];
   const LABELS = ["A", "B", "C", "D"];
   const QUESTIONS = DATA.flatMap(item => TYPES.map(type => ({ id: `${item.id}:${type}`, item, type })));
   const storage = {
     get(key, fallback) { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } },
     set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} }
   };
-  const BEST_KEY = "yojijukugo-best-v1";
-  const HISTORY_KEY = "yojijukugo-history-v1";
+  const BEST_KEY = "yojijukugo-best-v2";
+  const HISTORY_KEY = "yojijukugo-history-v2";
   const SIZE_KEY = "yojijukugo-size-v1";
   let best = Number(storage.get(BEST_KEY, 0)) || 0;
   let history = new Set(storage.get(HISTORY_KEY, []));
@@ -87,23 +87,9 @@
         [...b].filter((char, i) => char === correct[i]).length -
         [...a].filter((char, i) => char === correct[i]).length).slice(0, 3);
     }
-    const meaningGroups = [
-      ["一石二鳥", "一挙両得"],
-      ["試行錯誤", "暗中模索", "五里霧中"],
-      ["七転八起", "不撓不屈", "勇往邁進"],
-      ["四苦八苦", "七転八倒", "満身創痍"],
-      ["泰然自若", "明鏡止水"],
-      ["順風満帆", "前途洋洋"],
-      ["支離滅裂", "荒唐無稽"],
-      ["我田引水", "傍若無人", "夜郎自大"]
-    ];
-    const blocked = meaningGroups.find(group => group.includes(item.word)) || [];
-    return shuffle(DATA.filter(row => row.id !== item.id && !blocked.includes(row.word)))
-      .slice(0, 3).map(row => row.word);
   }
   function makeChoices(question) {
-    const answer = question.type === "blankEnd" ? question.item.word.slice(2)
-      : question.type === "blankStart" ? question.item.word.slice(0, 2) : question.item.word;
+    const answer = question.type === "blankEnd" ? question.item.word.slice(2) : question.item.word.slice(0, 2);
     const values = shuffle([answer, ...distractors(question)]);
     if (values.length !== 4 || new Set(values).size !== 4) throw Error("選択肢の生成に失敗しました");
     return { answer, values };
@@ -116,12 +102,10 @@
     $("correct-count").textContent = `現在の正解数 ${state.correct}`;
     $("lives").textContent = `ライフ ${"♥".repeat(state.lives)}${"♡".repeat(1 - state.lives)}`;
     $("lives").setAttribute("aria-label", `ライフ残り${state.lives}個`);
-    $("question-kind").textContent = q.type === "meaning" ? "意味から選ぶ問題" : "穴埋め問題";
+    $("question-kind").textContent = "穴埋め問題";
     $("question-text").textContent = q.type === "blankEnd"
       ? `「${q.item.word.slice(0, 2)}□□」の空欄に入る二文字は？`
-      : q.type === "blankStart"
-        ? `「□□${q.item.word.slice(2)}」の空欄に入る二文字は？`
-        : `「${q.item.meaning}」を表す四字熟語は？`;
+      : `「□□${q.item.word.slice(2)}」の空欄に入る二文字は？`;
     const choices = $("choices");
     choices.replaceChildren();
     values.forEach((value, index) => {
@@ -159,7 +143,7 @@
       state.lives--;
       state.streak = 0;
       state.wrong.push(q);
-      $("result-heading").textContent = `残念！正解は『${q.item.word}』です`;
+      $("result-heading").textContent = "残念！正解はこちらです";
       clicked.classList.add("wrong");
     }
     [...$("choices").children].forEach(button => {
@@ -170,7 +154,7 @@
     $("lives").textContent = `ライフ ${"♥".repeat(state.lives)}${"♡".repeat(1 - state.lives)}`;
     $("lives").setAttribute("aria-label", `ライフ残り${state.lives}個`);
     $("answer-word").textContent = `${q.item.word}（${q.item.reading}）`;
-    $("answer-meaning").textContent = q.item.meaning;
+    $("answer-word").hidden = right;
     $("next-button").textContent = state.lives === 0 || state.used.size === QUESTIONS.length ? "結果を見る" : "次の問題へ";
     $("feedback").hidden = false;
     $("feedback").scrollIntoView({ block: "nearest" });
@@ -215,13 +199,10 @@
       const li = document.createElement("li");
       const asked = document.createElement("p");
       const word = document.createElement("strong");
-      const meaning = document.createElement("p");
       asked.textContent = q.type === "blankEnd" ? `出題：${q.item.word.slice(0, 2)}□□`
-        : q.type === "blankStart" ? `出題：□□${q.item.word.slice(2)}`
-          : `出題：${q.item.meaning}`;
+        : `出題：□□${q.item.word.slice(2)}`;
       word.textContent = `${q.item.word}（${q.item.reading}）`;
-      meaning.textContent = q.item.meaning;
-      li.append(asked, word, meaning);
+      li.append(asked, word);
       list.append(li);
     }
     show("review-screen");
