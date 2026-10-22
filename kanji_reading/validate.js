@@ -7,7 +7,7 @@ const counts = {};
 for (const q of QUESTIONS) {
   if (!Number.isInteger(q.id) || ids.has(q.id)) errors.push(`ID重複・不正: ${q.id}`);
   ids.add(q.id);
-  const key = `${q.kanji}|${q.category}`;
+  const key = q.kanji;
   if (keys.has(key)) errors.push(`問題重複: ${key}`);
   keys.add(key);
   if (!q.kanji || !q.reading || !q.explanation) errors.push(`必須項目不足: ${q.id}`);
