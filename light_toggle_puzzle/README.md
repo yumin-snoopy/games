@@ -1,4 +1,4 @@
-# Lights Out（ライトアウト）
+# ライト消しパズル
 
 5×5のライトをすべて消す、一人用のパズルゲームです。HTML・CSS・JavaScriptだけで動作し、外部ライブラリは使いません。
 
@@ -18,6 +18,6 @@
 
 ## GitHub Pages
 
-[Lights Outを遊ぶ](https://yumin-snoopy.github.io/games/lights_out/)
+[ライト消しパズルを遊ぶ](https://yumin-snoopy.github.io/games/light_toggle_puzzle/)
 
 ブラウザの右クリックや一部の開発者ツールのショートカットは簡易的に抑止しています。Web上で配信するファイルのソースを完全に隠すことはできません。

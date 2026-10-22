@@ -3,7 +3,7 @@
 - [2048](https://yumin-snoopy.github.io/games/2048/index.html)
 - [ことりマージ](https://yumin-snoopy.github.io/games/bird_merge/index.html)
 - [とりとり大作戦](https://yumin-snoopy.github.io/games/bird_battle/index.html)
-- [Lights Out](https://yumin-snoopy.github.io/games/lights_out/index.html)
+- [ライト消しパズル](https://yumin-snoopy.github.io/games/light_toggle_puzzle/index.html)
 - [Bird Match Puzzle](https://yumin-snoopy.github.io/games/bird_match/index.html)
 - [数字つなぎパズル](https://yumin-snoopy.github.io/games/number_link/index.html)
 - [シマエナガの色わけロジック](https://yumin-snoopy.github.io/games/shimaenaga_color_logic/index.html)
