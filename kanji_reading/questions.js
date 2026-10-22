@@ -1,274 +1,985 @@
-/* 問題の追加は各行を「漢字|読み|難易度|説明」の順に記入します。選択肢は同ジャンルの読みから生成します。 */
-const QUESTION_GROUPS = {
-  '動物・鳥・魚': `海月|くらげ|中級|海に漂う刺胞動物。クラゲの漢字表記です。
-海星|ひとで|中級|星の形に見える海の動物です。
-海鼠|なまこ|中級|海底にすむ細長い棘皮動物です。
-河豚|ふぐ|中級|体を膨らませる魚です。
-烏賊|いか|中級|十本の腕を持つ軟体動物です。
-蛸|たこ|中級|八本の腕を持つ軟体動物です。
-鮟鱇|あんこう|上級|大きな口を持つ深海魚です。
-鱧|はも|上級|関西の料理にも使われる細長い魚です。
-鰰|はたはた|上級|秋田県などで親しまれる魚です。
-鯱|しゃち|上級|白黒の体を持つ大型の海生哺乳類です。
-鯔|ぼら|上級|河口にも入る魚です。
-鮎|あゆ|中級|清流にすむ香魚とも呼ばれる魚です。
-鮑|あわび|中級|岩場にすむ巻き貝の仲間です。
-海豹|あざらし|中級|海で暮らす鰭脚類です。
-海驢|あしか|上級|海にすむ鰭脚類の一種です。
-海馬|とど|超難問|大きな鰭脚類。ここでは動物名としての読みです。
-海獺|らっこ|上級|海面に浮かんで貝を食べる動物です。
-膃肭臍|おっとせい|超難問|アシカ科の海生哺乳類です。薬材名に由来する表記です。
-朱鷺|とき|超難問|赤い顔と長いくちばしを持つ鳥です。
-山羊|やぎ|中級|家畜として飼われるウシ科の動物です。
-馴鹿|となかい|上級|寒冷地にすむシカ科の動物です。
-蝙蝠|こうもり|上級|飛ぶことのできる哺乳類です。
-蟷螂|かまきり|上級|鎌のような前脚を持つ昆虫です。
-蜻蛉|とんぼ|中級|大きな複眼を持つ昆虫です。
-蚯蚓|みみず|上級|土の中で暮らす環形動物です。
-蟋蟀|こおろぎ|上級|秋に鳴く昆虫です。
-啄木鳥|きつつき|上級|木の幹をつつく鳥の総称です。
-鴛鴦|おしどり|上級|色鮮やかな雄で知られるカモ科の鳥です。
-雲雀|ひばり|中級|空高くさえずる鳥です。
-百舌鳥|もず|上級|小さな鳥ですが、獲物を枝に刺す習性で知られます。
-鶯|うぐいす|中級|春を告げる鳴き声で知られる鳥です。
-鷺|さぎ|中級|長い首と脚を持つ水鳥です。`,
-  '植物・花': `向日葵|ひまわり|中級|太陽に向くように咲くキク科の花です。
-紫陽花|あじさい|中級|梅雨時に咲く花木です。
-秋桜|こすもす|中級|秋に咲くキク科の花。和名の当て字です。
-蒲公英|たんぽぽ|中級|黄色い花と綿毛で知られる草です。
-躑躅|つつじ|上級|春に咲く花木の総称です。
-薔薇|ばら|中級|香りのある花で知られる植物です。
-木瓜|ぼけ|上級|春に赤や白の花をつける低木です。果物の木瓜とは別の読みです。
-木槿|むくげ|上級|夏から秋に花を咲かせるアオイ科の木です。
-合歓木|ねむのき|上級|夜に葉を閉じる木です。
-金木犀|きんもくせい|中級|秋に甘い香りの花を咲かせる木です。
-沈丁花|じんちょうげ|中級|早春に香りの強い花を咲かせる木です。
-山茶花|さざんか|上級|晩秋から冬に花を咲かせるツバキ科の木です。
-馬酔木|あせび|上級|早春に小さなつぼ形の花をつける有毒植物です。「あしび」とも読みます。
-杜若|かきつばた|上級|水辺に咲くアヤメ科の花です。
-菖蒲|あやめ|上級|アヤメ科の花を指す読みです。別に「しょうぶ」と読む植物もあります。
-勿忘草|わすれなぐさ|上級|小さな青い花を咲かせる草です。
-桔梗|ききょう|中級|星形の青紫色の花を咲かせる草です。
-撫子|なでしこ|中級|細かく裂けた花弁を持つ草花です。
-竜胆|りんどう|上級|秋に青紫色の花を咲かせる草です。
-女郎花|おみなえし|上級|秋の七草の一つで、黄色い小花をつけます。
-萩|はぎ|中級|秋の七草の一つです。
-薄|すすき|中級|秋の七草の一つで、穂をつけるイネ科の草です。
-蓮|はす|中級|池などに生え、大きな花を咲かせます。
-睡蓮|すいれん|中級|水面に葉を浮かべて花を咲かせます。
-木通|あけび|上級|つる性植物で、実は熟すと割れます。
-接骨木|にわとこ|超難問|小さな白い花をつける落葉低木です。
-白膠木|ぬるで|超難問|ウルシ科の落葉樹です。
-木賊|とくさ|超難問|細い茎が直立するシダ植物です。
-石楠花|しゃくなげ|上級|春から初夏に大きな花房をつける木です。
-鳳仙花|ほうせんか|中級|熟した実に触れると種がはじける草花です。`,
-  '食べ物': `胡桃|くるみ|中級|硬い殻に包まれた木の実です。
-銀杏|ぎんなん|中級|イチョウの実を食用にするときの読みです。「いちょう」とも読みます。
-無花果|いちじく|中級|内側に小さな花をつける果物です。
-柘榴|ざくろ|中級|赤い粒状の種衣を食べる果物です。
-枇杷|びわ|中級|初夏に食べられる橙色の果物です。
-李|すもも|中級|甘酸っぱい果物です。人名などでは別の読みもあります。
-杏|あんず|中級|橙色の果実をつけるバラ科の木です。
-檸檬|れもん|中級|酸味の強い柑橘類の当て字です。
-葡萄|ぶどう|中級|房になって実る果物です。
-林檎|りんご|中級|赤や青の実をつける果物です。
-蜜柑|みかん|中級|冬によく食べられる柑橘類です。
-蕃茄|とまと|上級|トマトの漢字表記です。
-甘藍|かんらん|上級|キャベツの和名です。
-玉蜀黍|とうもろこし|上級|粒を食べるイネ科の作物です。
-落花生|らっかせい|中級|花の後に地中で実が育つ豆です。
-胡麻|ごま|中級|種子を食用にする植物です。
-牛蒡|ごぼう|中級|長い根を食べる野菜です。
-蓮根|れんこん|中級|ハスの地下茎を食べる野菜です。
-筍|たけのこ|中級|タケの若い芽です。
-蒟蒻|こんにゃく|中級|コンニャクイモから作る食品です。
-饂飩|うどん|上級|小麦粉をこねて作る太い麺です。
-蕎麦|そば|中級|ソバの実から作る麺です。
-素麺|そうめん|中級|細い小麦麺です。
-外郎|ういろう|上級|米粉などで作る蒸し菓子です。薬の名にも使われます。
-羊羹|ようかん|中級|あんを固めた和菓子です。
-金平糖|こんぺいとう|上級|突起のある小さな砂糖菓子です。
-心太|ところてん|上級|テングサなどから作る、細長く突いた食品です。
-海蘊|もずく|上級|褐藻の一種で、酢の物などにします。
-若布|わかめ|中級|味噌汁などに使う海藻です。
-木耳|きくらげ|上級|耳のような形の食用きのこです。
-鯣|するめ|超難問|イカの内臓を取り除いて干した食品です。
-膾|なます|超難問|魚介や野菜を刻み、酢で和えた料理です。
-粽|ちまき|超難問|葉で包んだもち米などを蒸した食品です。`,
-  '日本の地名': `札幌|さっぽろ|中級|北海道札幌市の地名です。
-稚内|わっかない|中級|北海道稚内市の地名です。
-標茶|しべちゃ|上級|北海道川上郡標茶町の地名です。
-弟子屈|てしかが|上級|北海道川上郡弟子屈町の地名です。
-音威子府|おといねっぷ|超難問|北海道中川郡音威子府村の地名です。
-長万部|おしゃまんべ|上級|北海道山越郡長万部町の地名です。
-倶知安|くっちゃん|上級|北海道虻田郡倶知安町の地名です。
-八戸|はちのへ|中級|青森県八戸市の地名です。
-遠野|とおの|中級|岩手県遠野市の地名です。
-寒河江|さがえ|上級|山形県寒河江市の地名です。
-勿来|なこそ|超難問|福島県いわき市勿来町の地名です。
-行方|なめがた|上級|茨城県行方市の地名です。
-匝瑳|そうさ|超難問|千葉県匝瑳市の地名です。
-我孫子|あびこ|上級|千葉県我孫子市の地名です。
-国立|くにたち|中級|東京都国立市の地名です。
-福生|ふっさ|上級|東京都福生市の地名です。
-秦野|はだの|上級|神奈川県秦野市の地名です。
-燕|つばめ|中級|新潟県燕市の地名です。
-氷見|ひみ|中級|富山県氷見市の地名です。
-七尾|ななお|中級|石川県七尾市の地名です。
-各務原|かかみがはら|上級|岐阜県各務原市の地名です。
-四日市|よっかいち|中級|三重県四日市市の地名です。
-舞鶴|まいづる|中級|京都府舞鶴市の地名です。
-交野|かたの|上級|大阪府交野市の地名です。
-宍粟|しそう|超難問|兵庫県宍粟市の地名です。
-五條|ごじょう|中級|奈良県五條市の地名です。
-御坊|ごぼう|上級|和歌山県御坊市の地名です。
-米子|よなご|中級|鳥取県米子市の地名です。
-境港|さかいみなと|上級|鳥取県境港市の地名です。
-総社|そうじゃ|中級|岡山県総社市の地名です。
-防府|ほうふ|上級|山口県防府市の地名です。
-観音寺|かんおんじ|上級|香川県観音寺市の地名です。
-宿毛|すくも|上級|高知県宿毛市の地名です。
-直方|のおがた|上級|福岡県直方市の地名です。
-小郡|おごおり|上級|福岡県小郡市の地名です。同じ表記の地名が各地にあるため、所在地を明示しています。
-諫早|いさはや|上級|長崎県諫早市の地名です。
-合志|こうし|上級|熊本県合志市の地名です。
-日向|ひゅうが|中級|宮崎県日向市の地名です。他地域では異なる読みの場合があります。
-指宿|いぶすき|上級|鹿児島県指宿市の地名です。
-奄美|あまみ|中級|鹿児島県奄美市の地名です。`,
-  '難読熟語・その他': `時雨|しぐれ|中級|降ったりやんだりする秋冬の雨です。
-五月雨|さみだれ|中級|旧暦五月ごろに降り続く雨です。
-霙|みぞれ|中級|雨と雪が混じって降るものです。
-霰|あられ|中級|小さな氷の粒が降る現象です。
-吹雪|ふぶき|中級|雪が強い風に吹かれる現象です。
-陽炎|かげろう|上級|暑い日に景色が揺らいで見える現象です。
-蜃気楼|しんきろう|中級|光の屈折で遠くの景色が浮かんで見える現象です。
-朧月|おぼろづき|上級|春の夜にかすんで見える月です。
-東雲|しののめ|上級|明け方の東の空です。
-暁|あかつき|中級|夜明け前の時間帯です。
-黄昏|たそがれ|上級|夕暮れどきです。
-逢魔時|おうまどき|上級|夕方の薄暗い時間帯を表す言葉です。「大禍時（おおまがとき）」とも関係する表記です。
-木漏れ日|こもれび|中級|木の葉の間から差す日光です。
-微睡む|まどろむ|上級|うとうとと浅く眠ることです。
-躊躇|ちゅうちょ|中級|決心がつかず、ためらうことです。
-彷徨|ほうこう|上級|あてもなく歩き回ることです。
-邂逅|かいこう|上級|思いがけず出会うことです。
-憂鬱|ゆううつ|中級|気分が晴れず、沈むことです。
-慟哭|どうこく|上級|声を上げて激しく泣くことです。
-呵責|かしゃく|上級|責めさいなむことです。
-忸怩|じくじ|超難問|自分の行いを恥じるさまです。
-矜持|きょうじ|上級|自分の能力や立場への誇りです。「きんじ」とも読みます。
-斟酌|しんしゃく|上級|事情や気持ちをくみ取ることです。
-齟齬|そご|上級|物事が食い違い、合わないことです。
-瑕疵|かし|上級|欠点や不備のことです。
-膠着|こうちゃく|上級|状況が動かなくなることです。
-相槌|あいづち|中級|相手の話に合わせて打つ応答です。
-頷く|うなずく|中級|首を縦に振って同意などを示すことです。
-躓く|つまずく|中級|足が引っかかってよろけることです。
-翻弄|ほんろう|上級|思いどおりに動かすことです。
-蹂躙|じゅうりん|上級|踏みにじり、乱暴に扱うことです。
-喧騒|けんそう|中級|人や物音で騒がしいことです。
-静謐|せいひつ|上級|静かで落ち着いていることです。
-蒼穹|そうきゅう|超難問|青く広がる大空です。
-彼岸|ひがん|中級|春分・秋分のころに行う仏事の期間です。
-此岸|しがん|上級|仏教で、この世を指す言葉です。
-徒然|つれづれ|上級|することがなく、手持ちぶさたなさまです。
-忽然|こつぜん|上級|急に現れたり消えたりするさまです。
-漸く|ようやく|上級|長い時間を経て、やっとのことです。
-夥しい|おびただしい|上級|数や量が非常に多いさまです。`
-};
+/* 読みと表記を辞典で確認した問題のみ。旧IDは復習記録を守るため保持します。 */
+const QUESTION_DATA = [
+  {
+    "id": 1,
+    "kanji": "海月",
+    "reading": "くらげ",
+    "category": "動物・鳥・魚",
+    "difficulty": "中級",
+    "explanation": "海に漂う刺胞動物。クラゲの漢字表記です。",
+    "source": "https://kotobank.jp/word/%E6%B5%B7-441456"
+  },
+  {
+    "id": 2,
+    "kanji": "海星",
+    "reading": "ひとで",
+    "category": "動物・鳥・魚",
+    "difficulty": "中級",
+    "explanation": "星の形に見える海の動物です。",
+    "source": "https://kotobank.jp/word/%E6%B5%B7-441456"
+  },
+  {
+    "id": 3,
+    "kanji": "海鼠",
+    "reading": "なまこ",
+    "category": "動物・鳥・魚",
+    "difficulty": "中級",
+    "explanation": "海底にすむ細長い棘皮動物です。",
+    "source": "https://kotobank.jp/word/%E6%B5%B7-441456"
+  },
+  {
+    "id": 5,
+    "kanji": "烏賊",
+    "reading": "いか",
+    "category": "動物・鳥・魚",
+    "difficulty": "中級",
+    "explanation": "十本の腕を持つ軟体動物です。",
+    "source": "https://kotobank.jp/word/%E3%81%84%E3%81%8B-1267418"
+  },
+  {
+    "id": 8,
+    "kanji": "鱧",
+    "reading": "はも",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "関西の料理にも使われる細長い魚です。",
+    "source": "https://kotobank.jp/word/%E9%B1%A7-604479"
+  },
+  {
+    "id": 9,
+    "kanji": "鰰",
+    "reading": "はたはた",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "秋田県などで親しまれる魚です。",
+    "source": "https://kotobank.jp/word/%E9%B0%B0-1772782"
+  },
+  {
+    "id": 11,
+    "kanji": "鯔",
+    "reading": "ぼら",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "河口にも入る魚です。",
+    "source": "https://kotobank.jp/word/%E9%AF%94-435058"
+  },
+  {
+    "id": 12,
+    "kanji": "鮎",
+    "reading": "あゆ",
+    "category": "動物・鳥・魚",
+    "difficulty": "中級",
+    "explanation": "清流にすむ香魚とも呼ばれる魚です。",
+    "source": "https://kotobank.jp/word/%E9%AE%8E-427693"
+  },
+  {
+    "id": 13,
+    "kanji": "鮑",
+    "reading": "あわび",
+    "category": "動物・鳥・魚",
+    "difficulty": "中級",
+    "explanation": "岩場にすむ巻き貝の仲間です。",
+    "source": "https://kotobank.jp/word/%E9%AE%91-428983"
+  },
+  {
+    "id": 14,
+    "kanji": "海豹",
+    "reading": "あざらし",
+    "category": "動物・鳥・魚",
+    "difficulty": "中級",
+    "explanation": "海で暮らす鰭脚類です。",
+    "source": "https://kotobank.jp/word/%E6%B5%B7-441456"
+  },
+  {
+    "id": 15,
+    "kanji": "海驢",
+    "reading": "あしか",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "海にすむ鰭脚類の一種です。",
+    "source": "https://kotobank.jp/word/%E6%B5%B7-441456"
+  },
+  {
+    "id": 18,
+    "kanji": "膃肭臍",
+    "reading": "おっとせい",
+    "category": "動物・鳥・魚",
+    "difficulty": "超難問",
+    "explanation": "アシカ科の海生哺乳類です。薬材名に由来する表記です。",
+    "source": "https://kotobank.jp/word/%E8%86%83%E8%82%AD%E8%87%8D-3227481"
+  },
+  {
+    "id": 19,
+    "kanji": "朱鷺",
+    "reading": "とき",
+    "category": "動物・鳥・魚",
+    "difficulty": "超難問",
+    "explanation": "赤い顔と長いくちばしを持つ鳥です。",
+    "source": "https://kotobank.jp/word/%E9%B7%BA-509284"
+  },
+  {
+    "id": 22,
+    "kanji": "蝙蝠",
+    "reading": "こうもり",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "飛ぶことのできる哺乳類です。",
+    "source": "https://kotobank.jp/word/%E8%9D%99%E8%9D%A0-468842"
+  },
+  {
+    "id": 23,
+    "kanji": "蟷螂",
+    "reading": "かまきり",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "鎌のような前脚を持つ昆虫です。",
+    "source": "https://kotobank.jp/word/%E9%8E%8C%E5%88%87%E3%82%8A-2024006"
+  },
+  {
+    "id": 24,
+    "kanji": "蜻蛉",
+    "reading": "とんぼ",
+    "category": "動物・鳥・魚",
+    "difficulty": "中級",
+    "explanation": "大きな複眼を持つ昆虫です。",
+    "source": "https://kotobank.jp/word/%E8%9C%BB%E8%9B%89-546707"
+  },
+  {
+    "id": 25,
+    "kanji": "蚯蚓",
+    "reading": "みみず",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "土の中で暮らす環形動物です。",
+    "source": "https://kotobank.jp/word/%E8%9A%AF%E8%9A%93-476598"
+  },
+  {
+    "id": 26,
+    "kanji": "蟋蟀",
+    "reading": "こおろぎ",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "秋に鳴く昆虫です。",
+    "source": "https://kotobank.jp/word/%E8%9F%8B%E8%9F%80-498539"
+  },
+  {
+    "id": 27,
+    "kanji": "啄木鳥",
+    "reading": "きつつき",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "木の幹をつつく鳥の総称です。",
+    "source": "https://kotobank.jp/word/%E9%B3%A5-106314"
+  },
+  {
+    "id": 29,
+    "kanji": "雲雀",
+    "reading": "ひばり",
+    "category": "動物・鳥・魚",
+    "difficulty": "中級",
+    "explanation": "空高くさえずる鳥です。",
+    "source": "https://kotobank.jp/word/%E9%9B%B2-56087"
+  },
+  {
+    "id": 31,
+    "kanji": "鶯",
+    "reading": "うぐいす",
+    "category": "動物・鳥・魚",
+    "difficulty": "中級",
+    "explanation": "春を告げる鳴き声で知られる鳥です。",
+    "source": "https://kotobank.jp/word/%E9%B6%AF-439263"
+  },
+  {
+    "id": 32,
+    "kanji": "鷺",
+    "reading": "さぎ",
+    "category": "動物・鳥・魚",
+    "difficulty": "中級",
+    "explanation": "長い首と脚を持つ水鳥です。",
+    "source": "https://kotobank.jp/word/%E9%B7%BA-509284"
+  },
+  {
+    "id": 34,
+    "kanji": "紫陽花",
+    "reading": "あじさい",
+    "category": "植物・花",
+    "difficulty": "中級",
+    "explanation": "梅雨時に咲く花木です。",
+    "source": "https://kotobank.jp/word/%E8%8A%B1-115580"
+  },
+  {
+    "id": 40,
+    "kanji": "木槿",
+    "reading": "むくげ",
+    "category": "植物・花",
+    "difficulty": "上級",
+    "explanation": "夏から秋に花を咲かせるアオイ科の木です。",
+    "source": "https://kotobank.jp/word/%E6%9C%A8-471822"
+  },
+  {
+    "id": 41,
+    "kanji": "合歓木",
+    "reading": "ねむのき",
+    "category": "植物・花",
+    "difficulty": "上級",
+    "explanation": "夜に葉を閉じる木です。",
+    "source": "https://kotobank.jp/word/%E6%9C%A8-471822"
+  },
+  {
+    "id": 44,
+    "kanji": "山茶花",
+    "reading": "さざんか",
+    "category": "植物・花",
+    "difficulty": "上級",
+    "explanation": "晩秋から冬に花を咲かせるツバキ科の木です。",
+    "source": "https://kotobank.jp/word/%E8%8A%B1-115580"
+  },
+  {
+    "id": 48,
+    "kanji": "勿忘草",
+    "reading": "わすれなぐさ",
+    "category": "植物・花",
+    "difficulty": "上級",
+    "explanation": "小さな青い花を咲かせる草です。",
+    "source": "https://kotobank.jp/word/%E8%8D%89-482981"
+  },
+  {
+    "id": 52,
+    "kanji": "女郎花",
+    "reading": "おみなえし",
+    "category": "植物・花",
+    "difficulty": "上級",
+    "explanation": "秋の七草の一つで、黄色い小花をつけます。",
+    "source": "https://kotobank.jp/word/%E8%8A%B1-115580"
+  },
+  {
+    "id": 58,
+    "kanji": "接骨木",
+    "reading": "にわとこ",
+    "category": "植物・花",
+    "difficulty": "超難問",
+    "explanation": "小さな白い花をつける落葉低木です。",
+    "source": "https://kotobank.jp/word/%E6%9C%A8-471822"
+  },
+  {
+    "id": 59,
+    "kanji": "白膠木",
+    "reading": "ぬるで",
+    "category": "植物・花",
+    "difficulty": "超難問",
+    "explanation": "ウルシ科の落葉樹です。",
+    "source": "https://kotobank.jp/word/%E6%9C%A8-471822"
+  },
+  {
+    "id": 60,
+    "kanji": "木賊",
+    "reading": "とくさ",
+    "category": "植物・花",
+    "difficulty": "超難問",
+    "explanation": "細い茎が直立するシダ植物です。",
+    "source": "https://kotobank.jp/word/%E6%9C%A8-471822"
+  },
+  {
+    "id": 61,
+    "kanji": "石楠花",
+    "reading": "しゃくなげ",
+    "category": "植物・花",
+    "difficulty": "上級",
+    "explanation": "春から初夏に大きな花房をつける木です。",
+    "source": "https://kotobank.jp/word/%E8%8A%B1-115580"
+  },
+  {
+    "id": 65,
+    "kanji": "無花果",
+    "reading": "いちじく",
+    "category": "食べ物",
+    "difficulty": "中級",
+    "explanation": "内側に小さな花をつける果物です。",
+    "source": "https://kotobank.jp/word/%E7%84%A1%E8%8A%B1%E6%9E%9C-433353"
+  },
+  {
+    "id": 85,
+    "kanji": "素麺",
+    "reading": "そうめん",
+    "category": "食べ物",
+    "difficulty": "中級",
+    "explanation": "細い小麦麺です。",
+    "source": "https://kotobank.jp/word/%E7%B4%A0%E9%BA%BA-553264"
+  },
+  {
+    "id": 90,
+    "kanji": "海蘊",
+    "reading": "もずく",
+    "category": "食べ物",
+    "difficulty": "上級",
+    "explanation": "褐藻の一種で、酢の物などにします。",
+    "source": "https://kotobank.jp/word/%E6%B5%B7-441456"
+  },
+  {
+    "id": 91,
+    "kanji": "若布",
+    "reading": "わかめ",
+    "category": "食べ物",
+    "difficulty": "中級",
+    "explanation": "味噌汁などに使う海藻です。",
+    "source": "https://kotobank.jp/word/%E3%82%8F%E3%81%8B%E3%82%81-3176750"
+  },
+  {
+    "id": 92,
+    "kanji": "木耳",
+    "reading": "きくらげ",
+    "category": "食べ物",
+    "difficulty": "上級",
+    "explanation": "耳のような形の食用きのこです。",
+    "source": "https://kotobank.jp/word/%E6%9C%A8-471822"
+  },
+  {
+    "id": 93,
+    "kanji": "鯣",
+    "reading": "するめ",
+    "category": "食べ物",
+    "difficulty": "超難問",
+    "explanation": "イカの内臓を取り除いて干した食品です。",
+    "source": "https://kotobank.jp/word/%E9%AF%A3-544091"
+  },
+  {
+    "id": 94,
+    "kanji": "膾",
+    "reading": "なます",
+    "category": "食べ物",
+    "difficulty": "超難問",
+    "explanation": "魚介や野菜を刻み、酢で和えた料理です。",
+    "source": "https://kotobank.jp/word/%E8%86%BE-589613"
+  },
+  {
+    "id": 95,
+    "kanji": "粽",
+    "reading": "ちまき",
+    "category": "食べ物",
+    "difficulty": "超難問",
+    "explanation": "葉で包んだもち米などを蒸した食品です。",
+    "source": "https://kotobank.jp/word/%E3%81%A1%E3%81%BE%E3%81%8D-96555"
+  },
+  {
+    "id": 144,
+    "kanji": "東雲",
+    "reading": "しののめ",
+    "category": "難読熟語・その他",
+    "difficulty": "上級",
+    "explanation": "明け方の東の空です。",
+    "source": "https://kotobank.jp/word/%E9%9B%B2-56087"
+  },
+  {
+    "id": 147,
+    "kanji": "逢魔時",
+    "reading": "おうまどき",
+    "category": "難読熟語・その他",
+    "difficulty": "上級",
+    "explanation": "夕方の薄暗い時間帯を表す言葉です。「大禍時（おおまがとき）」とも関係する表記です。",
+    "source": "https://kotobank.jp/word/%E9%80%A2%E3%81%86%E9%AD%94%E6%99%82-449311"
+  },
+  {
+    "id": 149,
+    "kanji": "微睡む",
+    "reading": "まどろむ",
+    "category": "難読熟語・その他",
+    "difficulty": "上級",
+    "explanation": "うとうとと浅く眠ることです。",
+    "source": "https://kotobank.jp/word/%E7%9D%A1-539454"
+  },
+  {
+    "id": 176,
+    "kanji": "勇魚",
+    "reading": "いさな",
+    "category": "動物・鳥・魚",
+    "difficulty": "超難問",
+    "explanation": "クジラを表す古い呼び名です。",
+    "source": "https://kotobank.jp/word/%E9%AD%9A-430759"
+  },
+  {
+    "id": 177,
+    "kanji": "岩魚",
+    "reading": "いわな",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "渓流にすむ魚です。",
+    "source": "https://kotobank.jp/word/%E9%AD%9A-430759"
+  },
+  {
+    "id": 178,
+    "kanji": "虎魚",
+    "reading": "おこぜ",
+    "category": "動物・鳥・魚",
+    "difficulty": "超難問",
+    "explanation": "毒のあるとげを持つ海の魚です。",
+    "source": "https://kotobank.jp/word/%E9%AD%9A-430759"
+  },
+  {
+    "id": 179,
+    "kanji": "針魚",
+    "reading": "さより",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "細長い体とくちばしを持つ魚です。",
+    "source": "https://kotobank.jp/word/%E9%AD%9A-430759"
+  },
+  {
+    "id": 180,
+    "kanji": "秋刀魚",
+    "reading": "さんま",
+    "category": "動物・鳥・魚",
+    "difficulty": "中級",
+    "explanation": "秋に旬を迎える細長い魚です。",
+    "source": "https://kotobank.jp/word/%E9%AD%9A-430759"
+  },
+  {
+    "id": 181,
+    "kanji": "柳葉魚",
+    "reading": "ししゃも",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "細長い体の魚で、北海道の特産として知られます。",
+    "source": "https://kotobank.jp/word/%E9%AD%9A-430759"
+  },
+  {
+    "id": 182,
+    "kanji": "衣魚",
+    "reading": "しみ",
+    "category": "動物・鳥・魚",
+    "difficulty": "超難問",
+    "explanation": "紙や本の近くでも見られる小さな昆虫です。「魚」の字を使いますが魚ではありません。",
+    "source": "https://kotobank.jp/word/%E9%AD%9A-430759"
+  },
+  {
+    "id": 184,
+    "kanji": "沙魚",
+    "reading": "はぜ",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "河口や浅い海にもすむ魚です。",
+    "source": "https://kotobank.jp/word/%E9%AD%9A-430759"
+  },
+  {
+    "id": 185,
+    "kanji": "氷魚",
+    "reading": "ひお",
+    "category": "動物・鳥・魚",
+    "difficulty": "超難問",
+    "explanation": "アユの稚魚を指す言葉です。",
+    "source": "https://kotobank.jp/word/%E9%AD%9A-430759"
+  },
+  {
+    "id": 186,
+    "kanji": "比目魚",
+    "reading": "ひらめ",
+    "category": "動物・鳥・魚",
+    "difficulty": "超難問",
+    "explanation": "平たい体で海底にすむ魚です。",
+    "source": "https://kotobank.jp/word/%E9%AD%9A-430759"
+  },
+  {
+    "id": 187,
+    "kanji": "翻車魚",
+    "reading": "まんぼう",
+    "category": "動物・鳥・魚",
+    "difficulty": "超難問",
+    "explanation": "丸みのある大きな体の海の魚です。",
+    "source": "https://kotobank.jp/word/%E9%AD%9A-430759"
+  },
+  {
+    "id": 188,
+    "kanji": "赤目魚",
+    "reading": "めなだ",
+    "category": "動物・鳥・魚",
+    "difficulty": "超難問",
+    "explanation": "ボラに似た魚を指す名です。",
+    "source": "https://kotobank.jp/word/%E9%AD%9A-430759"
+  },
+  {
+    "id": 189,
+    "kanji": "公魚",
+    "reading": "わかさぎ",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "湖などで釣られる小型の魚です。",
+    "source": "https://kotobank.jp/word/%E9%AD%9A-430759"
+  },
+  {
+    "id": 190,
+    "kanji": "松魚",
+    "reading": "かつお",
+    "category": "動物・鳥・魚",
+    "difficulty": "超難問",
+    "explanation": "カツオの漢字表記の一つです。",
+    "source": "https://kotobank.jp/word/%E9%AD%9A-430759"
+  },
+  {
+    "id": 191,
+    "kanji": "善知鳥",
+    "reading": "うとう",
+    "category": "動物・鳥・魚",
+    "difficulty": "超難問",
+    "explanation": "海辺で繁殖する鳥です。",
+    "source": "https://kotobank.jp/word/%E9%B3%A5-106314"
+  },
+  {
+    "id": 192,
+    "kanji": "玄鳥",
+    "reading": "つばくらめ",
+    "category": "動物・鳥・魚",
+    "difficulty": "超難問",
+    "explanation": "ツバメを指す古い呼び名です。",
+    "source": "https://kotobank.jp/word/%E9%B3%A5-106314"
+  },
+  {
+    "id": 193,
+    "kanji": "時鳥",
+    "reading": "ほととぎす",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "特徴的な鳴き声で知られる夏鳥です。",
+    "source": "https://kotobank.jp/word/%E9%B3%A5-106314"
+  },
+  {
+    "id": 194,
+    "kanji": "鶫",
+    "reading": "つぐみ",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "冬に日本へ渡ってくる鳥です。",
+    "source": "https://kotobank.jp/word/%E9%B6%AB-571390"
+  },
+  {
+    "id": 195,
+    "kanji": "鵺",
+    "reading": "ぬえ",
+    "category": "動物・鳥・魚",
+    "difficulty": "超難問",
+    "explanation": "古くはトラツグミを指す鳥の名です。伝説の怪物の名にもなりました。",
+    "source": "https://kotobank.jp/word/%E9%B5%BA-593963"
+  },
+  {
+    "id": 197,
+    "kanji": "車前草",
+    "reading": "おおばこ",
+    "category": "植物・花",
+    "difficulty": "上級",
+    "explanation": "道端にも生える草で、穂に小さな花をつけます。",
+    "source": "https://kotobank.jp/word/%E8%8D%89-482981"
+  },
+  {
+    "id": 198,
+    "kanji": "含羞草",
+    "reading": "おじぎそう",
+    "category": "植物・花",
+    "difficulty": "上級",
+    "explanation": "触れると葉を閉じる草です。",
+    "source": "https://kotobank.jp/word/%E8%8D%89-482981"
+  },
+  {
+    "id": 199,
+    "kanji": "酢漿草",
+    "reading": "かたばみ",
+    "category": "植物・花",
+    "difficulty": "超難問",
+    "explanation": "ハート形の小葉が三枚つく草です。",
+    "source": "https://kotobank.jp/word/%E8%8D%89-482981"
+  },
+  {
+    "id": 200,
+    "kanji": "草石蚕",
+    "reading": "ちょろぎ",
+    "category": "植物・花",
+    "difficulty": "超難問",
+    "explanation": "巻貝のような形の地下茎を食べる草です。",
+    "source": "https://kotobank.jp/word/%E8%8D%89-482981"
+  },
+  {
+    "id": 201,
+    "kanji": "海人草",
+    "reading": "まくり",
+    "category": "植物・花",
+    "difficulty": "超難問",
+    "explanation": "海藻の一種を指す表記です。",
+    "source": "https://kotobank.jp/word/%E8%8D%89-482981"
+  },
+  {
+    "id": 202,
+    "kanji": "卯木",
+    "reading": "うつぎ",
+    "category": "植物・花",
+    "difficulty": "超難問",
+    "explanation": "初夏に白い花をつける木です。",
+    "source": "https://kotobank.jp/word/%E6%9C%A8-471822"
+  },
+  {
+    "id": 203,
+    "kanji": "木豇豆",
+    "reading": "きささげ",
+    "category": "植物・花",
+    "difficulty": "超難問",
+    "explanation": "細長い実をつける落葉樹です。",
+    "source": "https://kotobank.jp/word/%E6%9C%A8-471822"
+  },
+  {
+    "id": 204,
+    "kanji": "木天蓼",
+    "reading": "またたび",
+    "category": "植物・花",
+    "difficulty": "超難問",
+    "explanation": "ネコが反応することで知られるつる植物です。",
+    "source": "https://kotobank.jp/word/%E6%9C%A8-471822"
+  },
+  {
+    "id": 205,
+    "kanji": "寄生木",
+    "reading": "やどりぎ",
+    "category": "植物・花",
+    "difficulty": "上級",
+    "explanation": "ほかの木の枝に付いて育つ植物です。",
+    "source": "https://kotobank.jp/word/%E6%9C%A8-471822"
+  },
+  {
+    "id": 206,
+    "kanji": "胡蝶花",
+    "reading": "しゃが",
+    "category": "植物・花",
+    "difficulty": "超難問",
+    "explanation": "アヤメ科の花を指す表記です。",
+    "source": "https://kotobank.jp/word/%E8%8A%B1-115580"
+  },
+  {
+    "id": 207,
+    "kanji": "茅花",
+    "reading": "つばな",
+    "category": "植物・花",
+    "difficulty": "超難問",
+    "explanation": "チガヤの若い花穂を指す名です。",
+    "source": "https://kotobank.jp/word/%E8%8A%B1-115580"
+  },
+  {
+    "id": 208,
+    "kanji": "凌霄花",
+    "reading": "のうぜんかずら",
+    "category": "植物・花",
+    "difficulty": "超難問",
+    "explanation": "夏に橙色の花を咲かせるつる植物です。",
+    "source": "https://kotobank.jp/word/%E8%8A%B1-115580"
+  },
+  {
+    "id": 209,
+    "kanji": "花梨",
+    "reading": "かりん",
+    "category": "植物・花",
+    "difficulty": "上級",
+    "explanation": "香りの強い黄色い実をつける木です。",
+    "source": "https://kotobank.jp/word/%E8%8A%B1-115580"
+  },
+  {
+    "id": 210,
+    "kanji": "雪花菜",
+    "reading": "おから",
+    "category": "食べ物",
+    "difficulty": "超難問",
+    "explanation": "豆腐を作るときに出る大豆のしぼりかすです。",
+    "source": "https://kotobank.jp/word/%E8%8F%9C-507089"
+  },
+  {
+    "id": 211,
+    "kanji": "搾菜",
+    "reading": "ざーさい",
+    "category": "食べ物",
+    "difficulty": "超難問",
+    "explanation": "中国料理でも使われる、野菜の漬物です。",
+    "source": "https://kotobank.jp/word/%E8%8F%9C-507089"
+  },
+  {
+    "id": 212,
+    "kanji": "鹿尾菜",
+    "reading": "ひじき",
+    "category": "食べ物",
+    "difficulty": "超難問",
+    "explanation": "煮物などに使う海藻です。「羊栖菜」とも書きます。",
+    "source": "https://kotobank.jp/word/%E8%8F%9C-507089"
+  },
+  {
+    "id": 213,
+    "kanji": "菠薐草",
+    "reading": "ほうれんそう",
+    "category": "食べ物",
+    "difficulty": "超難問",
+    "explanation": "葉を食べる緑黄色野菜です。",
+    "source": "https://kotobank.jp/word/%E8%8D%89-482981"
+  },
+  {
+    "id": 214,
+    "kanji": "九年母",
+    "reading": "くねんぼ",
+    "category": "食べ物",
+    "difficulty": "超難問",
+    "explanation": "香りのある柑橘類です。",
+    "source": "https://kotobank.jp/word/%E4%B9%9D-476520"
+  },
+  {
+    "id": 216,
+    "kanji": "花魁",
+    "reading": "おいらん",
+    "category": "難読熟語・その他",
+    "difficulty": "上級",
+    "explanation": "江戸時代の位の高い遊女を指す言葉です。",
+    "source": "https://kotobank.jp/word/%E8%8A%B1-115580"
+  },
+  {
+    "id": 218,
+    "kanji": "草臥れる",
+    "reading": "くたびれる",
+    "category": "難読熟語・その他",
+    "difficulty": "上級",
+    "explanation": "疲れて力が抜けることです。辞書の難読欄では「草臥」として掲載されています。",
+    "source": "https://kotobank.jp/word/%E8%8D%89-482981"
+  },
+  {
+    "id": 219,
+    "kanji": "草鞋",
+    "reading": "わらじ",
+    "category": "難読熟語・その他",
+    "difficulty": "上級",
+    "explanation": "わらを編んで作った履物です。",
+    "source": "https://kotobank.jp/word/%E8%8D%89-482981"
+  },
+  {
+    "id": 220,
+    "kanji": "何某",
+    "reading": "なにがし",
+    "category": "難読熟語・その他",
+    "difficulty": "上級",
+    "explanation": "名前をはっきり示さずに言うときの語です。",
+    "source": "https://kotobank.jp/word/%E4%BD%95-432418"
+  },
+  {
+    "id": 221,
+    "kanji": "何卒",
+    "reading": "なにとぞ",
+    "category": "難読熟語・その他",
+    "difficulty": "上級",
+    "explanation": "強く願ったり頼んだりするときの言葉です。",
+    "source": "https://kotobank.jp/word/%E4%BD%95-432418"
+  },
+  {
+    "id": 223,
+    "kanji": "落人",
+    "reading": "おちゅうど",
+    "category": "難読熟語・その他",
+    "difficulty": "上級",
+    "explanation": "戦いに敗れて逃れた人です。",
+    "source": "https://kotobank.jp/word/%E8%90%BD-655830"
+  },
+  {
+    "id": 224,
+    "kanji": "洒落",
+    "reading": "しゃれ",
+    "category": "難読熟語・その他",
+    "difficulty": "上級",
+    "explanation": "しゃれた言葉や気の利いた装いのことです。",
+    "source": "https://kotobank.jp/word/%E8%90%BD-655830"
+  },
+  {
+    "id": 225,
+    "kanji": "虎落",
+    "reading": "もがり",
+    "category": "難読熟語・その他",
+    "difficulty": "超難問",
+    "explanation": "竹などを組んで作る垣や柵です。",
+    "source": "https://kotobank.jp/word/%E8%90%BD-655830"
+  },
+  {
+    "id": 226,
+    "kanji": "九十九折",
+    "reading": "つづらおり",
+    "category": "難読熟語・その他",
+    "difficulty": "超難問",
+    "explanation": "道が何度も曲がりくねって続くことです。",
+    "source": "https://kotobank.jp/word/%E4%B9%9D-476520"
+  },
+  {
+    "id": 227,
+    "kanji": "九十九髪",
+    "reading": "つくもがみ",
+    "category": "難読熟語・その他",
+    "difficulty": "超難問",
+    "explanation": "老女の白髪を指す古い言葉です。",
+    "source": "https://kotobank.jp/word/%E4%B9%9D-476520"
+  },
+  {
+    "id": 228,
+    "kanji": "海豚",
+    "reading": "いるか",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "海にすむ哺乳類で、群れで泳ぎます。",
+    "source": "https://kotobank.jp/word/%E6%B5%B7-441456"
+  },
+  {
+    "id": 229,
+    "kanji": "海象",
+    "reading": "せいうち",
+    "category": "動物・鳥・魚",
+    "difficulty": "超難問",
+    "explanation": "大きな牙を持つ海の哺乳類です。",
+    "source": "https://kotobank.jp/word/%E6%B5%B7-441456"
+  },
+  {
+    "id": 230,
+    "kanji": "海胆",
+    "reading": "うに",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "海底にすむ、とげを持つ動物です。",
+    "source": "https://kotobank.jp/word/%E6%B5%B7-441456"
+  },
+  {
+    "id": 231,
+    "kanji": "海鞘",
+    "reading": "ほや",
+    "category": "動物・鳥・魚",
+    "difficulty": "超難問",
+    "explanation": "海にすむ、袋のような体の動物です。",
+    "source": "https://kotobank.jp/word/%E6%B5%B7-441456"
+  },
+  {
+    "id": 232,
+    "kanji": "四十雀",
+    "reading": "しじゅうから",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "黒い頭と胸の線が目立つ小鳥です。",
+    "source": "https://kotobank.jp/word/%E9%9B%80-524782"
+  },
+  {
+    "id": 233,
+    "kanji": "山雀",
+    "reading": "やまがら",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "山林などで見られる小鳥です。",
+    "source": "https://kotobank.jp/word/%E9%9B%80-524782"
+  },
+  {
+    "id": 234,
+    "kanji": "葦雀",
+    "reading": "よしきり",
+    "category": "動物・鳥・魚",
+    "difficulty": "超難問",
+    "explanation": "葦原でさえずる小鳥の名です。",
+    "source": "https://kotobank.jp/word/%E9%9B%80-524782"
+  },
+  {
+    "id": 235,
+    "kanji": "翡翠",
+    "reading": "かわせみ",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "青緑色の羽が美しい、川辺の鳥です。宝石名としては「ひすい」と読みます。",
+    "source": "https://kotobank.jp/word/%E7%BF%A0-539455"
+  },
+  {
+    "id": 236,
+    "kanji": "鰈",
+    "reading": "かれい",
+    "category": "動物・鳥・魚",
+    "difficulty": "中級",
+    "explanation": "平たい体で海底にすむ魚です。",
+    "source": "https://kotobank.jp/word/%E9%B0%88-468341"
+  },
+  {
+    "id": 237,
+    "kanji": "鱸",
+    "reading": "すずき",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "成長につれて呼び名が変わる出世魚です。",
+    "source": "https://kotobank.jp/word/%E9%B1%B8-541741"
+  },
+  {
+    "id": 238,
+    "kanji": "鯒",
+    "reading": "こち",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "平たい頭を持つ海の魚です。",
+    "source": "https://kotobank.jp/word/%E3%81%93%E3%81%A1-3151722"
+  },
+  {
+    "id": 239,
+    "kanji": "鰤",
+    "reading": "ぶり",
+    "category": "動物・鳥・魚",
+    "difficulty": "中級",
+    "explanation": "冬に脂がのる出世魚です。",
+    "source": "https://kotobank.jp/word/%E9%B0%A4-621200"
+  },
+  {
+    "id": 240,
+    "kanji": "鰯",
+    "reading": "いわし",
+    "category": "動物・鳥・魚",
+    "difficulty": "中級",
+    "explanation": "群れで泳ぐ小型の海の魚です。",
+    "source": "https://kotobank.jp/word/%E9%B0%AF-436925"
+  },
+  {
+    "id": 241,
+    "kanji": "鯖",
+    "reading": "さば",
+    "category": "動物・鳥・魚",
+    "difficulty": "中級",
+    "explanation": "青い背を持つ海の魚です。",
+    "source": "https://kotobank.jp/word/%E9%AF%96-188412"
+  },
+  {
+    "id": 242,
+    "kanji": "鯰",
+    "reading": "なまず",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "ひげを持つ淡水魚です。",
+    "source": "https://kotobank.jp/word/%E9%AF%B0-589619"
+  },
+  {
+    "id": 243,
+    "kanji": "鰍",
+    "reading": "かじか",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "清流の川底にすむ魚です。",
+    "source": "https://kotobank.jp/word/%E9%B0%8D-461979"
+  },
+  {
+    "id": 244,
+    "kanji": "鰻",
+    "reading": "うなぎ",
+    "category": "動物・鳥・魚",
+    "difficulty": "中級",
+    "explanation": "細長い体の魚で、川と海を行き来します。",
+    "source": "https://kotobank.jp/word/%E9%B0%BB-441048"
+  },
+  {
+    "id": 245,
+    "kanji": "泥鰌",
+    "reading": "どじょう",
+    "category": "動物・鳥・魚",
+    "difficulty": "上級",
+    "explanation": "川や田んぼの泥底にすむ細長い魚です。",
+    "source": "https://kotobank.jp/word/%E6%B3%A5%E9%B0%8C-583562"
+  }
+];
 
-// 同じカテゴリーの別の正解語を誤答に使うことで、意味の近い選択肢にします。
-/* 追加分は読みを掲載する辞典ページを明示。既存IDを変えないよう末尾に追加します。 */
-const SOURCE_URLS = {
-  魚: 'https://kotobank.jp/word/%E9%AD%9A-430759',
-  鳥: 'https://kotobank.jp/word/%E9%B3%A5-106314',
-  鶫: 'https://kotobank.jp/word/%E9%B6%AB-571390',
-  鵺: 'https://kotobank.jp/word/%E9%B5%BA-593963',
-  木: 'https://kotobank.jp/word/%E6%9C%A8-471822',
-  草: 'https://kotobank.jp/word/%E8%8D%89-482981',
-  花: 'https://kotobank.jp/word/%E8%8A%B1-115580',
-  菜: 'https://kotobank.jp/word/%E8%8F%9C-507089',
-  桜: 'https://kotobank.jp/word/%E6%A1%9C-448703',
-  何: 'https://kotobank.jp/word/%E4%BD%95-432418',
-  落: 'https://kotobank.jp/word/%E8%90%BD-655830',
-  九: 'https://kotobank.jp/word/%E4%B9%9D-476520'
-};
-const VERIFIED_ADDITIONS = {
-  '動物・鳥・魚': `勇魚|いさな|超難問|クジラを表す古い呼び名です。|魚
-岩魚|いわな|上級|渓流にすむ魚です。|魚
-虎魚|おこぜ|超難問|毒のあるとげを持つ海の魚です。|魚
-針魚|さより|上級|細長い体とくちばしを持つ魚です。|魚
-秋刀魚|さんま|中級|秋に旬を迎える細長い魚です。|魚
-柳葉魚|ししゃも|上級|細長い体の魚で、北海道の特産として知られます。|魚
-衣魚|しみ|超難問|紙や本の近くでも見られる小さな昆虫です。「魚」の字を使いますが魚ではありません。|魚
-飛魚|あご|超難問|トビウオを指す読みです。「とびうお」とも読みます。|魚
-沙魚|はぜ|上級|河口や浅い海にもすむ魚です。|魚
-氷魚|ひお|超難問|アユの稚魚を指す言葉です。|魚
-比目魚|ひらめ|超難問|平たい体で海底にすむ魚です。|魚
-翻車魚|まんぼう|超難問|丸みのある大きな体の海の魚です。|魚
-赤目魚|めなだ|超難問|ボラに似た魚を指す名です。|魚
-公魚|わかさぎ|上級|湖などで釣られる小型の魚です。|魚
-松魚|かつお|超難問|カツオの漢字表記の一つです。|魚
-善知鳥|うとう|超難問|海辺で繁殖する鳥です。|鳥
-玄鳥|つばくらめ|超難問|ツバメを指す古い呼び名です。|鳥
-時鳥|ほととぎす|上級|特徴的な鳴き声で知られる夏鳥です。|鳥
-鶫|つぐみ|上級|冬に日本へ渡ってくる鳥です。|鶫
-鵺|ぬえ|超難問|古くはトラツグミを指す鳥の名です。伝説の怪物の名にもなりました。|鵺
-木菟|みみずく|超難問|頭に羽角があるフクロウ類の呼び名です。|木`,
-  '植物・花': `車前草|おおばこ|上級|道端にも生える草で、穂に小さな花をつけます。|草
-含羞草|おじぎそう|上級|触れると葉を閉じる草です。|草
-酢漿草|かたばみ|超難問|ハート形の小葉が三枚つく草です。|草
-草石蚕|ちょろぎ|超難問|巻貝のような形の地下茎を食べる草です。|草
-海人草|まくり|超難問|海藻の一種を指す表記です。|草
-卯木|うつぎ|超難問|初夏に白い花をつける木です。|木
-木豇豆|きささげ|超難問|細長い実をつける落葉樹です。|木
-木天蓼|またたび|超難問|ネコが反応することで知られるつる植物です。|木
-寄生木|やどりぎ|上級|ほかの木の枝に付いて育つ植物です。|木
-胡蝶花|しゃが|超難問|アヤメ科の花を指す表記です。|花
-茅花|つばな|超難問|チガヤの若い花穂を指す名です。|花
-凌霄花|のうぜんかずら|超難問|夏に橙色の花を咲かせるつる植物です。|花
-花梨|かりん|上級|香りの強い黄色い実をつける木です。|花`,
-  '食べ物': `雪花菜|おから|超難問|豆腐を作るときに出る大豆のしぼりかすです。|菜
-搾菜|ざーさい|超難問|中国料理でも使われる、野菜の漬物です。|菜
-鹿尾菜|ひじき|超難問|煮物などに使う海藻です。「羊栖菜」とも書きます。|菜
-菠薐草|ほうれんそう|超難問|葉を食べる緑黄色野菜です。|草
-九年母|くねんぼ|超難問|香りのある柑橘類です。|九
-桜桃|さくらんぼ|上級|サクランボの漢字表記です。|桜`,
-  '難読熟語・その他': `花魁|おいらん|上級|江戸時代の位の高い遊女を指す言葉です。|花
-花車|きゃしゃ|超難問|姿やつくりが細く、弱々しく見えるさまです。|花
-草臥れる|くたびれる|上級|疲れて力が抜けることです。辞書の難読欄では「草臥」として掲載されています。|草
-草鞋|わらじ|上級|わらを編んで作った履物です。|草
-何某|なにがし|上級|名前をはっきり示さずに言うときの語です。|何
-何卒|なにとぞ|上級|強く願ったり頼んだりするときの言葉です。|何
-何処|いずこ|超難問|「どこ」を表す古風な言い方です。「どこ」とも読みます。|何
-落人|おちゅうど|上級|戦いに敗れて逃れた人です。|落
-洒落|しゃれ|上級|しゃれた言葉や気の利いた装いのことです。|落
-虎落|もがり|超難問|竹などを組んで作る垣や柵です。|落
-九十九折|つづらおり|超難問|道が何度も曲がりくねって続くことです。|九
-九十九髪|つくもがみ|超難問|老女の白髪を指す古い言葉です。|九`
-};
+// 誤答は同じジャンルの別の読みから選び、4択を構成します。
+const QUESTIONS = QUESTION_DATA.map((question, index) => {
+  const alternatives = QUESTION_DATA.filter(item => item.category === question.category && item.reading !== question.reading).map(item => item.reading);
+  const choices = [question.reading, ...[0, 1, 2].map(offset => alternatives[(index * 7 + offset) % alternatives.length])];
+  return { ...question, choices };
+});
 
-const BASE_QUESTIONS = Object.entries(QUESTION_GROUPS).flatMap(([category, lines]) => {
-  const rows = lines.trim().split('\n').map(line => line.split('|'));
-  return rows.map(([kanji, reading, difficulty, explanation], index) => {
-    const alternatives = rows.filter(row => row[1] !== reading).map(row => row[1]);
-    const choices = [reading, ...[0, 1, 2].map(offset => alternatives[(index * 7 + offset * 11) % alternatives.length])];
-    return { kanji, reading, choices, category, difficulty, explanation };
-  });
-}).map((question, index) => ({ id: index + 1, ...question }));
-
-const ADDITIONAL_QUESTIONS = Object.entries(VERIFIED_ADDITIONS).flatMap(([category, lines]) => {
-  const rows = lines.trim().split('\n').map(line => line.split('|'));
-  const oldReadings = QUESTION_GROUPS[category].trim().split('\n').map(line => line.split('|')[1]);
-  const allReadings = [...oldReadings, ...rows.map(row => row[1])];
-  return rows.map(([kanji, reading, difficulty, explanation, sourceKey], index) => {
-    const alternatives = allReadings.filter(candidate => candidate !== reading);
-    const choices = [reading, ...[0, 1, 2].map(offset => alternatives[(index * 7 + offset * 11) % alternatives.length])];
-    return { kanji, reading, choices, category, difficulty, explanation, source: SOURCE_URLS[sourceKey] };
-  });
-}).map((question, index) => ({ id: BASE_QUESTIONS.length + index + 1, ...question }));
-
-const QUESTIONS = [...BASE_QUESTIONS, ...ADDITIONAL_QUESTIONS];
-
-if (typeof module !== 'undefined') module.exports = { QUESTIONS, QUESTION_GROUPS, VERIFIED_ADDITIONS, SOURCE_URLS };
+if (typeof module !== 'undefined') module.exports = { QUESTIONS, QUESTION_DATA };
 

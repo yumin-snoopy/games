@@ -2,7 +2,6 @@
   'use strict';
   const $ = id => document.getElementById(id);
   const KEY = 'kanji-reading-v1';
-  const categories = ['動物・鳥・魚', '植物・花', '食べ物', '日本の地名', '難読熟語・その他'];
   const difficultySelect = $('difficulty');
   const categorySelect = $('category');
   let saved = { bestScore: 0, bestStreak: 0, missed: [] };
@@ -11,6 +10,9 @@
     if (read && typeof read === 'object') saved = { ...saved, ...read };
   } catch (_) { /* 保存を使えない環境でもゲームは続けられます。 */ }
   if (!Array.isArray(saved.missed)) saved.missed = [];
+  // 出題対象から外した旧問題は復習一覧からも取り除きます。
+  const activeIds = new Set(QUESTIONS.map(q => q.id));
+  saved.missed = [...new Set(saved.missed.filter(id => activeIds.has(id)))];
   const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (_) {} };
   let state = null;
 
@@ -65,9 +67,6 @@
     $('question-number').textContent = state.review ? `復習 ${state.seen}問目` : `${state.seen}問目 ／ 全${state.pool.length}問`;
     $('question-kind').textContent = `${q.category}・${q.difficulty}`;
     $('kanji').textContent = q.kanji;
-    const place = q.category === '日本の地名' ? q.explanation.match(/^(.*?(?:都|道|府|県).*?(?:市|区|町|村))/)?.[1] : '';
-    $('location').textContent = place ? `所在地：${place}` : '';
-    $('location').hidden = !place;
     $('choices').replaceChildren();
     for (const choice of shuffle(q.choices)) {
       const button = document.createElement('button');

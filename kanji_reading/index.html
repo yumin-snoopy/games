@@ -15,7 +15,7 @@
     <header class="masthead"><p class="eyebrow">KANJI READING QUIZ</p><h1>難読漢字チャレンジ</h1><p>知っているつもりの漢字にも、思いがけない読み方が。<br>ゆっくり考えて、読みを選んでください。</p></header>
     <section id="setup" class="panel" aria-labelledby="setup-title">
       <h2 id="setup-title">挑戦する問題を選ぶ</h2>
-      <div class="fields"><label>難易度<select id="difficulty"><option>中級</option><option selected>上級</option><option>超難問</option><option>おまかせ</option></select></label><label>ジャンル<select id="category"><option>すべて</option><option>動物・鳥・魚</option><option>植物・花</option><option>食べ物</option><option>日本の地名</option><option>難読熟語・その他</option></select></label></div>
+      <div class="fields"><label>難易度<select id="difficulty"><option>中級</option><option selected>上級</option><option>超難問</option><option>おまかせ</option></select></label><label>ジャンル<select id="category"><option>すべて</option><option>動物・鳥・魚</option><option>植物・花</option><option>食べ物</option><option>難読熟語・その他</option></select></label></div>
       <p id="available" class="support"></p>
       <button id="start" class="primary" type="button">ゲームを始める</button>
       <div class="review-start"><p id="review-count" class="support"></p><button id="review-start" type="button">間違えた問題だけ復習する</button></div>
@@ -25,7 +25,7 @@
     <section id="play" class="panel" aria-labelledby="question-heading" hidden>
       <div class="status" aria-label="現在の成績"><p>得点<strong id="score">0</strong></p><p>連続正解<strong id="streak">0</strong></p><p id="miss-label">残りミス<strong id="remaining">3</strong></p></div>
       <div class="question-meta"><span id="question-number"></span><span id="question-kind"></span></div>
-      <h2 id="question-heading">この漢字、何と読む？</h2><p id="location" class="location" hidden></p><p id="kanji" class="kanji"></p>
+      <h2 id="question-heading">この漢字、何と読む？</h2><p id="kanji" class="kanji"></p>
       <div id="choices" class="choices" role="group" aria-label="読み方の選択肢"></div>
       <div id="feedback" class="feedback" role="status" aria-live="polite" hidden><strong id="judgment"></strong><p id="correct-reading"></p><p id="explanation"></p><p id="source-wrap" hidden><a id="source" href="#" target="_blank" rel="noopener noreferrer">読みの出典を見る（辞典）</a></p></div>
       <button id="next" class="primary" type="button" hidden>次の問題</button>
