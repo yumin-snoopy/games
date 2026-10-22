@@ -76,7 +76,7 @@
     }
     $('feedback').hidden = true;
     $('feedback').className = 'feedback';
-    $('lookup').hidden = true;
+    $('correct-reading').hidden = true;
     $('next').hidden = true;
     $('next').textContent = '次の問題';
   }
@@ -102,9 +102,8 @@
     $('streak').textContent = state.streak;
     $('remaining').textContent = 3 - state.wrong;
     $('judgment').textContent = correct ? '正解です！' : '不正解です。';
-    $('correct-reading').textContent = `正しい読み方：${q.reading}`;
-    $('lookup').href = `https://www.google.com/search?q=${encodeURIComponent(q.kanji + ' 読み方')}`;
-    $('lookup').hidden = false;
+    $('correct-reading').textContent = correct ? '' : `正しい読み方：${q.reading}`;
+    $('correct-reading').hidden = correct;
     $('feedback').className = correct ? 'feedback' : 'feedback wrong';
     $('feedback').hidden = false;
     $('next').hidden = false;

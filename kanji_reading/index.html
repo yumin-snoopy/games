@@ -8,7 +8,7 @@
   <title>難読漢字チャレンジ</title>
   <link rel="stylesheet" href="style.css">
   <script src="questions.js?v=500-20261023" defer></script>
-  <script src="script.js" defer></script>
+  <script src="script.js?v=answer-ui-20261023" defer></script>
 </head>
 <body>
   <main class="shell">
@@ -29,7 +29,7 @@
       <div class="question-meta"><span id="question-number"></span><span id="question-kind"></span></div>
       <h2 id="question-heading">この漢字、何と読む？</h2><p id="kanji" class="kanji"></p>
       <div id="choices" class="choices" role="group" aria-label="読み方の選択肢"></div>
-      <div id="feedback" class="feedback" role="status" aria-live="polite" hidden><strong id="judgment"></strong><p id="correct-reading"></p><p><a id="lookup" href="#" target="_blank" rel="noopener noreferrer" hidden>この漢字を外部で調べる（Google検索）</a></p></div>
+      <div id="feedback" class="feedback" role="status" aria-live="polite" hidden><strong id="judgment"></strong><p id="correct-reading" hidden></p></div>
       <button id="next" class="primary" type="button" hidden>次の問題</button>
       <button id="stop" class="quiet" type="button">結果を見る</button>
     </section>
