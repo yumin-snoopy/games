@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f4eb">
+  <meta name="description" content="大人のための難読漢字四択クイズ。難易度とジャンルを選び、自分のペースで挑戦できます。">
+  <title>難読漢字チャレンジ</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="questions.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead"><p class="eyebrow">KANJI READING QUIZ</p><h1>難読漢字チャレンジ</h1><p>知っているつもりの漢字にも、思いがけない読み方が。<br>ゆっくり考えて、読みを選んでください。</p></header>
+    <section id="setup" class="panel" aria-labelledby="setup-title">
+      <h2 id="setup-title">挑戦する問題を選ぶ</h2>
+      <div class="fields"><label>難易度<select id="difficulty"><option value="中級" selected>中級（漢検2級程度）</option><option value="上級">上級（漢検準1級程度）</option><option value="超難問">超難問（漢検1級程度）</option><option>おまかせ</option></select></label><label>ジャンル<select id="category"><option>すべて</option><option>動物・鳥・魚</option><option>植物・花</option><option>食べ物</option><option>難読熟語・その他</option></select></label></div>
+      <p class="support">漢検の級は難しさの目安です。各語の正式な出題級を示すものではありません。</p>
+      <p id="available" class="support"></p>
+      <button id="start" class="primary" type="button">ゲームを始める</button>
+      <div class="review-start"><p id="review-count" class="support"></p><button id="review-start" type="button">間違えた問題だけ復習する</button></div>
+      <p class="rules">正解で10点。5問連続正解ごとに20点追加。3問間違えると終了します。制限時間はありません。</p>
+      <p id="records" class="support"></p>
+    </section>
+    <section id="play" class="panel" aria-labelledby="question-heading" hidden>
+      <div class="status" aria-label="現在の成績"><p>得点<strong id="score">0</strong></p><p>連続正解<strong id="streak">0</strong></p><p id="miss-label">残りミス<strong id="remaining">3</strong></p></div>
+      <div class="question-meta"><span id="question-number"></span><span id="question-kind"></span></div>
+      <h2 id="question-heading">この漢字、何と読む？</h2><p id="kanji" class="kanji"></p>
+      <div id="choices" class="choices" role="group" aria-label="読み方の選択肢"></div>
+      <div id="feedback" class="feedback" role="status" aria-live="polite" hidden><strong id="judgment"></strong><p id="correct-reading"></p><p><a id="lookup" href="#" target="_blank" rel="noopener noreferrer" hidden>この漢字を外部で調べる（Google検索）</a></p></div>
+      <button id="next" class="primary" type="button" hidden>次の問題</button>
+      <button id="stop" class="quiet" type="button">結果を見る</button>
+    </section>
+    <section id="result" class="panel" aria-labelledby="result-title" hidden><p class="eyebrow">RESULT</p><h2 id="result-title">今回の成績</h2><p id="result-reason" class="support"></p><dl class="results"><div><dt>今回の得点</dt><dd id="final-score"></dd></div><div><dt>正解数</dt><dd id="final-correct"></dd></div><div><dt>不正解数</dt><dd id="final-wrong"></dd></div><div><dt>正答率</dt><dd id="final-rate"></dd></div><div><dt>最長連続正解</dt><dd id="final-streak"></dd></div><div><dt>過去最高得点</dt><dd id="final-best"></dd></div><div><dt>過去最多連続正解</dt><dd id="final-best-streak"></dd></div></dl><button id="retry" class="primary" type="button">もう一度挑戦</button><button id="review-result" type="button">間違えた問題だけ復習する</button></section>
+    <footer>少しずつ、知らない言葉に出会う楽しさを。</footer>
+  </main>
+</body>
+</html>
+
