@@ -18,8 +18,8 @@ for (const row of data) {
   readings.add(row.reading);
 }
 const counts = [1, 2, 3].map(tier => data.filter(row => row.tier === tier).length);
-if (data.length * 2 < 200) errors.push("問題数が200未満");
-if (counts.some(count => count < 20)) errors.push("難易度別の語数が不足");
+if (data.length !== 200) errors.push(`語数が200ではない: ${data.length}`);
+if (counts.join(",") !== "67,67,66") errors.push(`難易度別の語数が不正: ${counts.join(",")}`);
 for (const row of data) {
   for (const start of [false, true]) {
     const correct = start ? row.word.slice(0, 2) : row.word.slice(2);
