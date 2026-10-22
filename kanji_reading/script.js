@@ -77,6 +77,7 @@
     }
     $('feedback').hidden = true;
     $('feedback').className = 'feedback';
+    $('source-wrap').hidden = true;
     $('next').hidden = true;
     $('next').textContent = '次の問題';
   }
@@ -104,6 +105,8 @@
     $('judgment').textContent = correct ? '正解です！' : '不正解です。';
     $('correct-reading').textContent = `正しい読み方：${q.reading}`;
     $('explanation').textContent = q.explanation;
+    $('source-wrap').hidden = !q.source;
+    if (q.source) $('source').href = q.source;
     $('feedback').className = correct ? 'feedback' : 'feedback wrong';
     $('feedback').hidden = false;
     $('next').hidden = false;

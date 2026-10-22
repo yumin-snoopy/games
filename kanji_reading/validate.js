@@ -15,6 +15,7 @@ for (const q of QUESTIONS) {
   if (!Array.isArray(q.choices) || q.choices.length !== 4 || new Set(q.choices).size !== 4) errors.push(`選択肢重複・不足: ${q.id}`);
   if (q.choices.filter(choice => choice === q.reading).length !== 1) errors.push(`正解不在・重複: ${q.id}`);
   if (q.category === '日本の地名' && !/(都|道|府|県)/.test(q.explanation)) errors.push(`地名の所在地不足: ${q.id}`);
+  if (q.id > 175 && !/^https:\/\/kotobank\.jp\/word\//.test(q.source || '')) errors.push(`追加問題の出典不足: ${q.id}`);
   counts[q.difficulty] ??= {};
   counts[q.difficulty][q.category] = (counts[q.difficulty][q.category] || 0) + 1;
 }

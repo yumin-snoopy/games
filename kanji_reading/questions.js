@@ -178,7 +178,77 @@ const QUESTION_GROUPS = {
 };
 
 // 同じカテゴリーの別の正解語を誤答に使うことで、意味の近い選択肢にします。
-const QUESTIONS = Object.entries(QUESTION_GROUPS).flatMap(([category, lines]) => {
+/* 追加分は読みを掲載する辞典ページを明示。既存IDを変えないよう末尾に追加します。 */
+const SOURCE_URLS = {
+  魚: 'https://kotobank.jp/word/%E9%AD%9A-430759',
+  鳥: 'https://kotobank.jp/word/%E9%B3%A5-106314',
+  鶫: 'https://kotobank.jp/word/%E9%B6%AB-571390',
+  鵺: 'https://kotobank.jp/word/%E9%B5%BA-593963',
+  木: 'https://kotobank.jp/word/%E6%9C%A8-471822',
+  草: 'https://kotobank.jp/word/%E8%8D%89-482981',
+  花: 'https://kotobank.jp/word/%E8%8A%B1-115580',
+  菜: 'https://kotobank.jp/word/%E8%8F%9C-507089',
+  桜: 'https://kotobank.jp/word/%E6%A1%9C-448703',
+  何: 'https://kotobank.jp/word/%E4%BD%95-432418',
+  落: 'https://kotobank.jp/word/%E8%90%BD-655830',
+  九: 'https://kotobank.jp/word/%E4%B9%9D-476520'
+};
+const VERIFIED_ADDITIONS = {
+  '動物・鳥・魚': `勇魚|いさな|超難問|クジラを表す古い呼び名です。|魚
+岩魚|いわな|上級|渓流にすむ魚です。|魚
+虎魚|おこぜ|超難問|毒のあるとげを持つ海の魚です。|魚
+針魚|さより|上級|細長い体とくちばしを持つ魚です。|魚
+秋刀魚|さんま|中級|秋に旬を迎える細長い魚です。|魚
+柳葉魚|ししゃも|上級|細長い体の魚で、北海道の特産として知られます。|魚
+衣魚|しみ|超難問|紙や本の近くでも見られる小さな昆虫です。「魚」の字を使いますが魚ではありません。|魚
+飛魚|あご|超難問|トビウオを指す読みです。「とびうお」とも読みます。|魚
+沙魚|はぜ|上級|河口や浅い海にもすむ魚です。|魚
+氷魚|ひお|超難問|アユの稚魚を指す言葉です。|魚
+比目魚|ひらめ|超難問|平たい体で海底にすむ魚です。|魚
+翻車魚|まんぼう|超難問|丸みのある大きな体の海の魚です。|魚
+赤目魚|めなだ|超難問|ボラに似た魚を指す名です。|魚
+公魚|わかさぎ|上級|湖などで釣られる小型の魚です。|魚
+松魚|かつお|超難問|カツオの漢字表記の一つです。|魚
+善知鳥|うとう|超難問|海辺で繁殖する鳥です。|鳥
+玄鳥|つばくらめ|超難問|ツバメを指す古い呼び名です。|鳥
+時鳥|ほととぎす|上級|特徴的な鳴き声で知られる夏鳥です。|鳥
+鶫|つぐみ|上級|冬に日本へ渡ってくる鳥です。|鶫
+鵺|ぬえ|超難問|古くはトラツグミを指す鳥の名です。伝説の怪物の名にもなりました。|鵺
+木菟|みみずく|超難問|頭に羽角があるフクロウ類の呼び名です。|木`,
+  '植物・花': `車前草|おおばこ|上級|道端にも生える草で、穂に小さな花をつけます。|草
+含羞草|おじぎそう|上級|触れると葉を閉じる草です。|草
+酢漿草|かたばみ|超難問|ハート形の小葉が三枚つく草です。|草
+草石蚕|ちょろぎ|超難問|巻貝のような形の地下茎を食べる草です。|草
+海人草|まくり|超難問|海藻の一種を指す表記です。|草
+卯木|うつぎ|超難問|初夏に白い花をつける木です。|木
+木豇豆|きささげ|超難問|細長い実をつける落葉樹です。|木
+木天蓼|またたび|超難問|ネコが反応することで知られるつる植物です。|木
+寄生木|やどりぎ|上級|ほかの木の枝に付いて育つ植物です。|木
+胡蝶花|しゃが|超難問|アヤメ科の花を指す表記です。|花
+茅花|つばな|超難問|チガヤの若い花穂を指す名です。|花
+凌霄花|のうぜんかずら|超難問|夏に橙色の花を咲かせるつる植物です。|花
+花梨|かりん|上級|香りの強い黄色い実をつける木です。|花`,
+  '食べ物': `雪花菜|おから|超難問|豆腐を作るときに出る大豆のしぼりかすです。|菜
+搾菜|ざーさい|超難問|中国料理でも使われる、野菜の漬物です。|菜
+鹿尾菜|ひじき|超難問|煮物などに使う海藻です。「羊栖菜」とも書きます。|菜
+菠薐草|ほうれんそう|超難問|葉を食べる緑黄色野菜です。|草
+九年母|くねんぼ|超難問|香りのある柑橘類です。|九
+桜桃|さくらんぼ|上級|サクランボの漢字表記です。|桜`,
+  '難読熟語・その他': `花魁|おいらん|上級|江戸時代の位の高い遊女を指す言葉です。|花
+花車|きゃしゃ|超難問|姿やつくりが細く、弱々しく見えるさまです。|花
+草臥れる|くたびれる|上級|疲れて力が抜けることです。辞書の難読欄では「草臥」として掲載されています。|草
+草鞋|わらじ|上級|わらを編んで作った履物です。|草
+何某|なにがし|上級|名前をはっきり示さずに言うときの語です。|何
+何卒|なにとぞ|上級|強く願ったり頼んだりするときの言葉です。|何
+何処|いずこ|超難問|「どこ」を表す古風な言い方です。「どこ」とも読みます。|何
+落人|おちゅうど|上級|戦いに敗れて逃れた人です。|落
+洒落|しゃれ|上級|しゃれた言葉や気の利いた装いのことです。|落
+虎落|もがり|超難問|竹などを組んで作る垣や柵です。|落
+九十九折|つづらおり|超難問|道が何度も曲がりくねって続くことです。|九
+九十九髪|つくもがみ|超難問|老女の白髪を指す古い言葉です。|九`
+};
+
+const BASE_QUESTIONS = Object.entries(QUESTION_GROUPS).flatMap(([category, lines]) => {
   const rows = lines.trim().split('\n').map(line => line.split('|'));
   return rows.map(([kanji, reading, difficulty, explanation], index) => {
     const alternatives = rows.filter(row => row[1] !== reading).map(row => row[1]);
@@ -187,5 +257,18 @@ const QUESTIONS = Object.entries(QUESTION_GROUPS).flatMap(([category, lines]) =>
   });
 }).map((question, index) => ({ id: index + 1, ...question }));
 
-if (typeof module !== 'undefined') module.exports = { QUESTIONS, QUESTION_GROUPS };
+const ADDITIONAL_QUESTIONS = Object.entries(VERIFIED_ADDITIONS).flatMap(([category, lines]) => {
+  const rows = lines.trim().split('\n').map(line => line.split('|'));
+  const oldReadings = QUESTION_GROUPS[category].trim().split('\n').map(line => line.split('|')[1]);
+  const allReadings = [...oldReadings, ...rows.map(row => row[1])];
+  return rows.map(([kanji, reading, difficulty, explanation, sourceKey], index) => {
+    const alternatives = allReadings.filter(candidate => candidate !== reading);
+    const choices = [reading, ...[0, 1, 2].map(offset => alternatives[(index * 7 + offset * 11) % alternatives.length])];
+    return { kanji, reading, choices, category, difficulty, explanation, source: SOURCE_URLS[sourceKey] };
+  });
+}).map((question, index) => ({ id: BASE_QUESTIONS.length + index + 1, ...question }));
+
+const QUESTIONS = [...BASE_QUESTIONS, ...ADDITIONAL_QUESTIONS];
+
+if (typeof module !== 'undefined') module.exports = { QUESTIONS, QUESTION_GROUPS, VERIFIED_ADDITIONS, SOURCE_URLS };
 
