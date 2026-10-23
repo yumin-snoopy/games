@@ -97,6 +97,85 @@
     ).join(" ") + " ＝ " + question.target;
   }
 
+  function dragTile(button, tile) {
+    let gesture = null;
+    let suppressClick = false;
+    let ghost = null;
+    let dropTarget = null;
+
+    function targetAt(x, y) {
+      const element = document.elementFromPoint(x, y);
+      const slot = element && element.closest(".slot");
+      return slot && !slot.disabled ? slot : null;
+    }
+
+    function clearDrag() {
+      if (dropTarget) dropTarget.classList.remove("drop-target");
+      dropTarget = null;
+      if (ghost) ghost.remove();
+      ghost = null;
+      button.classList.remove("drag-source");
+    }
+
+    button.addEventListener("pointerdown", (event) => {
+      if (finished || button.disabled || !event.isPrimary || (event.pointerType === "mouse" && event.button !== 0)) return;
+      gesture = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, active: false };
+      button.setPointerCapture(event.pointerId);
+    });
+    button.addEventListener("pointermove", (event) => {
+      if (!gesture || event.pointerId !== gesture.pointerId) return;
+      if (!gesture.active && Math.hypot(event.clientX - gesture.x, event.clientY - gesture.y) < 10) return;
+      if (!gesture.active) {
+        gesture.active = true;
+        ghost = document.createElement("div");
+        ghost.className = "drag-ghost";
+        ghost.textContent = tile.value;
+        ghost.setAttribute("aria-hidden", "true");
+        document.body.append(ghost);
+        button.classList.add("drag-source");
+      }
+      event.preventDefault();
+      ghost.style.left = event.clientX + "px";
+      ghost.style.top = event.clientY + "px";
+      const target = targetAt(event.clientX, event.clientY);
+      if (target !== dropTarget) {
+        if (dropTarget) dropTarget.classList.remove("drop-target");
+        dropTarget = target;
+        if (dropTarget) dropTarget.classList.add("drop-target");
+      }
+    });
+    button.addEventListener("pointerup", (event) => {
+      if (!gesture || event.pointerId !== gesture.pointerId) return;
+      const wasDragging = gesture.active;
+      const target = wasDragging ? targetAt(event.clientX, event.clientY) : null;
+      gesture = null;
+      clearDrag();
+      if (wasDragging) {
+        suppressClick = true;
+        setTimeout(() => { suppressClick = false; }, 0);
+        if (target) {
+          selected = tile.id;
+          place(Number(target.dataset.slot));
+        } else {
+          setMessage("空欄の上で指を離してください。札は置き場に残っています。");
+        }
+      }
+    });
+    button.addEventListener("pointercancel", () => {
+      if (gesture && gesture.active) {
+        suppressClick = true;
+        setTimeout(() => { suppressClick = false; }, 0);
+      }
+      gesture = null;
+      clearDrag();
+    });
+    return () => {
+      if (!suppressClick) return false;
+      suppressClick = false;
+      return true;
+    };
+  }
+
   function render() {
     $("level-name").textContent = LABELS[level];
     $("progress").textContent = round + " / 10問";
@@ -112,6 +191,7 @@
       }
       const button = document.createElement("button");
       button.type = "button";
+      button.dataset.slot = token;
       button.className = "slot" + (placements[token] === null ? " empty" : "") +
         (locked[token] ? " locked" : "");
       const id = placements[token];
@@ -146,7 +226,9 @@
         (usedAt === -1 ? selected === tile.id ? "選択中" : "未使用" : "使用中"));
       button.setAttribute("aria-pressed", selected === tile.id ? "true" : "false");
       button.disabled = finished || usedAt !== -1;
+      const suppressDraggedClick = usedAt === -1 ? dragTile(button, tile) : () => false;
       button.addEventListener("click", () => {
+        if (suppressDraggedClick()) return;
         selected = selected === tile.id ? null : tile.id;
         render();
       });

@@ -34,13 +34,16 @@ button:disabled{cursor:default;opacity:.55}
 .slot.empty::after{content:"□"}
 .slot.locked{background:#e2ecdf;border-style:double;border-width:5px}
 .slot.locked::before{content:"ヒント";display:block;font-size:11px;line-height:1}
-.slot.selected{outline:4px solid #bd6e32;outline-offset:2px}
+.slot.selected,.slot.drop-target{outline:4px solid #bd6e32;outline-offset:2px;background:#fff0db}
 .target{white-space:nowrap;color:#164f38}
 .tray{margin-top:20px}
 .tray h3{font-size:19px;margin:0}
 .selection-status{min-height:29px;margin:6px 0 10px;font-size:17px;font-weight:700}
 .tiles{display:flex;flex-wrap:wrap;gap:10px}
 .tile{width:70px;height:70px;min-height:70px;padding:0;font-size:34px;border-width:3px}
+.tile{touch-action:none;user-select:none;-webkit-user-select:none}
+.tile.drag-source{opacity:.5}
+.drag-ghost{position:fixed;z-index:10;pointer-events:none;display:grid;place-items:center;width:64px;height:64px;border:3px solid #ad5820;border-radius:12px;background:#f9e9d5;color:#263e31;font-size:34px;font-weight:700;box-shadow:0 8px 18px #263e3138;transform:translate(-50%,-50%)}
 .tile.selected{background:#f9e9d5;border-color:#ad5820;outline:3px solid #ad5820;outline-offset:2px}
 .tile.used{background:#e7ebe7;border-color:#89988b;color:#53665a;font-size:30px}
 .tile .use-label{display:block;font-size:11px;line-height:1.1}
