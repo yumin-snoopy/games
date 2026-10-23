@@ -10,3 +10,4 @@
 - [麻雀・待ち牌当てクイズ](https://yumin-snoopy.github.io/games/mahjong_wait_quiz/)
 - [四字熟語クイズ](https://yumin-snoopy.github.io/games/yojijukugo_quiz/)
 - [難読漢字チャレンジ](https://yumin-snoopy.github.io/games/kanji_reading/)
+- [数字ならべ計算パズル](https://yumin-snoopy.github.io/games/number_formula/)

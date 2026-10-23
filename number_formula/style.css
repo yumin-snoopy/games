@@ -1,0 +1,59 @@
+*{box-sizing:border-box}
+:root{font-family:"Yu Gothic","Hiragino Kaku Gothic ProN",Meiryo,system-ui,sans-serif;color:#26352f;background:#f8f6f0;color-scheme:light}
+body{margin:0;min-width:0}
+main{width:min(100% - 28px,760px);margin:0 auto;padding:30px 0 56px}
+header{margin-bottom:24px}
+.eyebrow{margin:0 0 8px;color:#386c55;font-size:16px;font-weight:700}
+h1{font-size:clamp(28px,6vw,40px);line-height:1.35;margin:0}
+.intro{font-size:18px;line-height:1.6;margin:12px 0 0}
+.panel{background:#fff;border:1px solid #d7ddd5;border-radius:18px;padding:clamp(18px,4vw,30px);box-shadow:0 5px 18px #2b45300b}
+[hidden]{display:none!important}
+h2{font-size:26px;line-height:1.35;margin:0 0 10px}
+p{line-height:1.6}
+button{font:inherit;cursor:pointer;touch-action:manipulation;border:2px solid #456b58;border-radius:12px;background:#fff;color:#263e31;min-height:56px;padding:8px 16px;font-size:18px;font-weight:700}
+button:hover:not(:disabled){background:#edf4ee}
+button:focus-visible,summary:focus-visible{outline:4px solid #bd6e32;outline-offset:3px}
+button:disabled{cursor:default;opacity:.55}
+.primary{background:#2b694b;color:#fff;border-color:#2b694b}
+.primary:hover:not(:disabled){background:#21563d}
+.level-list,.result-actions{display:grid;gap:12px;margin-top:22px}
+.level-list button{text-align:left;padding:16px 20px}
+.level-list strong,.level-list span{display:block}
+.level-list strong{font-size:23px}
+.level-list span{font-size:16px;font-weight:400;margin-top:4px}
+.game-top{display:flex;justify-content:space-between;align-items:start;gap:12px}
+.level-name{margin:0;color:#386c55;font-weight:700}
+.game-top h2{margin:2px 0 0}
+.text-button{min-height:48px;font-size:16px;padding:7px 10px;white-space:nowrap}
+.instruction{font-size:18px;margin:14px 0 20px}
+.formula-box{background:#f5f7f2;border:2px solid #c9d5c8;border-radius:16px;padding:18px 12px;text-align:center}
+.small-label{font-size:16px;margin:0 0 14px;font-weight:700}
+.formula{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 5px;font-size:clamp(26px,6vw,36px);font-weight:700;line-height:1.2}
+.formula .symbol{white-space:nowrap}
+.slot{width:58px;height:62px;min-height:62px;padding:0;border:3px solid #5c7666;background:#fff;color:#183f2d;font-size:32px;line-height:1;flex:0 0 auto}
+.slot.empty::after{content:"□"}
+.slot.locked{background:#e2ecdf;border-style:double;border-width:5px}
+.slot.locked::before{content:"ヒント";display:block;font-size:11px;line-height:1}
+.slot.selected{outline:4px solid #bd6e32;outline-offset:2px}
+.target{white-space:nowrap;color:#164f38}
+.tray{margin-top:20px}
+.tray h3{font-size:19px;margin:0}
+.selection-status{min-height:29px;margin:6px 0 10px;font-size:17px;font-weight:700}
+.tiles{display:flex;flex-wrap:wrap;gap:10px}
+.tile{width:70px;height:70px;min-height:70px;padding:0;font-size:34px;border-width:3px}
+.tile.selected{background:#f9e9d5;border-color:#ad5820;outline:3px solid #ad5820;outline-offset:2px}
+.tile.used{background:#e7ebe7;border-color:#89988b;color:#53665a;font-size:30px}
+.tile .use-label{display:block;font-size:11px;line-height:1.1}
+.message{min-height:62px;margin:18px 0 12px;padding:12px 14px;background:#f7f3e9;border-left:5px solid #9b7850;border-radius:6px;font-size:18px;font-weight:700}
+.message.success{background:#e5f2e6;border-color:#2b694b}
+.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.actions button{min-width:0}
+.next-button{width:100%;margin-top:12px}
+.rules{margin-top:25px;font-size:17px}
+.rules summary{cursor:pointer;font-weight:700;padding:8px 0}
+.rules p{margin:6px 0}
+.results{margin:24px 0}
+.results div{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #d7ddd5;padding:12px 0;font-size:19px}
+.results dt{font-weight:700}.results dd{margin:0;white-space:nowrap}
+@media(max-width:430px){main{width:calc(100% - 20px);padding-top:18px}.panel{padding:16px}.formula{gap:8px 3px;font-size:27px}.slot{width:50px;height:58px;min-height:58px;font-size:29px}.tile{width:64px;height:66px;min-height:66px}.actions button{font-size:17px;padding:6px}.instruction{font-size:17px}}
+@media(max-width:350px){.formula{font-size:25px}.slot{width:46px;height:55px;min-height:55px;font-size:27px}.formula-box{padding:14px 5px}}
