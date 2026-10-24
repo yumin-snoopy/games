@@ -1,17 +1,18 @@
-- [ゲーム一覧](https://yumin-snoopy.github.io/games/)
-- [リバーシ](https://yumin-snoopy.github.io/games/reversi/)
-- [2048](https://yumin-snoopy.github.io/games/2048/)
-- [ことりマージ](https://yumin-snoopy.github.io/games/bird_merge/)
-- [とりとり大作戦](https://yumin-snoopy.github.io/games/bird_battle/)
-- [ライト消しパズル](https://yumin-snoopy.github.io/games/light_toggle_puzzle/)
-- [Bird Match Puzzle](https://yumin-snoopy.github.io/games/bird_match/)
-- [数字つなぎパズル](https://yumin-snoopy.github.io/games/number_link/)
-- [シマエナガの色わけロジック](https://yumin-snoopy.github.io/games/shimaenaga_color_logic/)
-- [麻雀・待ち牌当てクイズ](https://yumin-snoopy.github.io/games/mahjong_wait_quiz/)
-- [四字熟語クイズ](https://yumin-snoopy.github.io/games/yojijukugo_quiz/)
-- [難読漢字チャレンジ](https://yumin-snoopy.github.io/games/kanji_reading/)
-- [数字ならべ計算パズル](https://yumin-snoopy.github.io/games/number_formula/)
+# ゲーム（games）
 
-## アクセス解析（GA4）
+ブラウザで遊べるゲームをまとめています。名前をクリックすると各ゲームの説明が開きます。
 
-新しい公開用HTMLを追加するときは、各ページの `<head>` に測定ID `G-4RX7JMCQLZ` の Google タグを1回だけ設定してください。既存の `index.html` にある `gtag.js` の読み込みと `gtag('config', 'G-4RX7JMCQLZ')` をひな形にし、両方のIDを一致させます。既存タグがあるページには重複して追加しません。公開後はGA4のリアルタイム画面でページビューを確認してください。
+| 名前 | 概要 |
+| --- | --- |
+| [2048](2048/README.md) | 同じ数字のタイルをくっつけ、2048を目指すパズルゲームです。 |
+| [とりとり大作戦](bird_battle/README.md) | エサをためて鳥を送り出し、相手の巣を目指すゲームです。 |
+| [鳥あわせパズル（Bird Match Puzzle）](bird_match/README.md) | 隣り合う鳥を入れ替え、同じ鳥を3羽以上そろえて消すパズルです。 |
+| [ことりマージ](bird_merge/README.md) | 鳥を落とし、同じ鳥どうしをくっつけて育てるゲームです。 |
+| [難読漢字チャレンジ](kanji_reading/README.md) | 漢字の読みを選ぶ四択クイズです。 |
+| [ライト消しパズル](light_toggle_puzzle/README.md) | 5×5のライトをすべて消すパズルです。 |
+| [麻雀・待ち牌当てクイズ](mahjong_wait_quiz/README.md) | 13枚の門前テンパイ形から、アガれる牌をすべて選ぶクイズです。 |
+| [数字ならべ計算パズル](number_formula/README.md) | 数字の札を空欄に置き、指定の答えになる式を完成させるゲームです。 |
+| [数字つなぎパズル](number_link/README.md) | 同じ数字を、交差しない線でつなぐパズルです。 |
+| [リバーシ](reversi/README.md) | 相手の石をはさんで裏返し、最後に石の数を競うゲームです。 |
+| [シマエナガの色わけロジック](shimaenaga_color_logic/README.md) | 各行・各列・各色エリアに1羽ずつ、互いに隣り合わないようシマエナガを置くパズルです。 |
+| [四字熟語クイズ](yojijukugo_quiz/README.md) | 四字熟語の前半または後半を選ぶ四択クイズです。 |
