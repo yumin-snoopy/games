@@ -1,2 +1,304 @@
-:root{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;color:#453842;background:#fff6f8;font-synthesis:none}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 20% 0%,#ffe5ee,transparent 35%),#fff6f8}.app{width:min(100%,780px);margin:auto;padding:20px 18px 48px}.screen{background:#fff;border:1px solid #f2dfe5;border-radius:30px;padding:clamp(22px,5vw,42px);box-shadow:0 12px 35px #b17b9018}.screen[hidden],.countdown[hidden]{display:none}.eyebrow{margin:0;color:#ac5878;font-size:1rem;font-weight:800;letter-spacing:.07em}h1,h2,h3{line-height:1.45}h1{font-size:clamp(1.8rem,6vw,2.8rem);margin:8px 0 10px}h2{font-size:clamp(1.55rem,5vw,2.25rem);margin:8px 0}h3{font-size:1.3rem;margin:32px 0 12px}.lead{font-size:1.12rem;line-height:1.75}.home-pet{width:min(100%,340px);height:285px;margin:0 auto}.home-pet svg,.pet svg{width:100%;height:100%;display:block}.home-stats,.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.home-stats>div,.stat-grid>div{background:#fff1f5;border-radius:20px;padding:16px;text-align:center}.home-stats span,.stat-grid span{display:block;font-size:.95rem}.home-stats strong,.stat-grid strong{display:block;font-size:1.55rem;margin-top:6px;font-variant-numeric:tabular-nums}.actions{display:grid;gap:12px;margin-top:25px}.button{border:0;border-radius:999px;padding:16px 20px;min-height:58px;font:inherit;font-size:1.12rem;font-weight:800;cursor:pointer;touch-action:manipulation}.button:focus-visible{outline:4px solid #79546f;outline-offset:3px}.primary{background:#d86690;color:#fff;box-shadow:0 5px 0 #ab456c}.primary:active{transform:translateY(3px);box-shadow:0 2px 0 #ab456c}.secondary{background:#f7e8ee;color:#743c54}.safety{line-height:1.7;font-size:.91rem;color:#715f68;margin:24px 0 0}.workout-head{text-align:center}.instruction{min-height:3.3em;margin:7px 0 0;font-size:1.08rem;line-height:1.55}.stage{height:clamp(245px,53vw,355px);position:relative;overflow:hidden;background:radial-gradient(circle at 50% 50%,#fff9fb 15%,#fdeaf0 100%);border-radius:26px;margin:12px 0}.pet{height:100%;width:100%;max-width:430px;margin:auto}.direction{position:absolute;bottom:12px;left:0;right:0;text-align:center;font-weight:800;color:#8c4b69;font-size:1.05rem}.countdown{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff9f2de;color:#803f5d;font-weight:800;font-size:1.5rem}.countdown strong{font-size:5rem;line-height:1.1}.time-row{display:flex;align-items:center;justify-content:space-between;font-size:1.1rem}.time-row strong{font-size:2.4rem;font-variant-numeric:tabular-nums}.progress-track{height:16px;border-radius:20px;background:#f5e5eb;overflow:hidden;margin:10px 0}#progress-fill{height:100%;width:0;background:#d86690;border-radius:20px}.next{margin:12px 0 18px;color:#69545e}.workout-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}.compact{margin-top:20px}.finish-mark{text-align:center;font-size:4rem;color:#d86690}.stat-grid{margin:24px 0}.records-grid{grid-template-columns:repeat(2,1fr)}.calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}.calendar>*{text-align:center;min-width:0}.weekday{font-size:.8rem;color:#715f68}.day{border:1px solid #f1dfe5;border-radius:11px;min-height:56px;padding:6px 1px;background:#fff}.day.done{background:#fce1eb;border-color:#eaaec3}.day strong{display:block}.day small{font-size:.68rem;line-height:1.1}.history-day{border-top:1px solid #f1dfe5;padding:12px 0}.history-day h4{margin:0 0 5px;font-size:1rem}.history-day ul{margin:0;padding-left:1.4em;line-height:1.7}.data-note{font-size:.83rem;color:#715f68;line-height:1.6}#records-home{width:100%;margin-top:12px}@media(max-width:480px){.app{padding:8px 8px 30px}.screen{padding:20px 16px;border-radius:22px}.stage{height:295px}.workout-actions{grid-template-columns:1fr 1fr}.button{font-size:1rem;padding:12px 10px}.day{min-height:50px}.day small{font-size:.59rem}}@media(prefers-reduced-motion:reduce){.button{scroll-behavior:auto}}
+:root {
+  font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+  color:#453842;
+  background:#fff6f8;
+  font-synthesis:none
+}
+* {
+  box-sizing:border-box
+}
+body {
+  margin:0;
+  min-height:100vh;
+  background:radial-gradient(circle at 20% 0%,#ffe5ee,transparent 35%),#fff6f8
+}
+.app {
+  width:min(100%,780px);
+  margin:auto;
+  padding:20px 18px 48px
+}
+.screen {
+  background:#fff;
+  border:1px solid #f2dfe5;
+  border-radius:30px;
+  padding:clamp(22px,5vw,42px);
+  box-shadow:0 12px 35px #b17b9018
+}
+.screen[hidden],.countdown[hidden] {
+  display:none
+}
+.eyebrow {
+  margin:0;
+  color:#ac5878;
+  font-size:1rem;
+  font-weight:800;
+  letter-spacing:.07em
+}
+h1,h2,h3 {
+  line-height:1.45
+}
+h1 {
+  font-size:clamp(1.8rem,6vw,2.8rem);
+  margin:8px 0 10px
+}
+h2 {
+  font-size:clamp(1.55rem,5vw,2.25rem);
+  margin:8px 0
+}
+h3 {
+  font-size:1.3rem;
+  margin:32px 0 12px
+}
+.lead {
+  font-size:1.12rem;
+  line-height:1.75
+}
+.home-pet {
+  width:min(100%,340px);
+  height:285px;
+  margin:0 auto
+}
+.home-pet svg,.pet svg {
+  width:100%;
+  height:100%;
+  display:block
+}
+.home-stats,.stat-grid {
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px
+}
+.home-stats>div,.stat-grid>div {
+  background:#fff1f5;
+  border-radius:20px;
+  padding:16px;
+  text-align:center
+}
+.home-stats span,.stat-grid span {
+  display:block;
+  font-size:.95rem
+}
+.home-stats strong,.stat-grid strong {
+  display:block;
+  font-size:1.55rem;
+  margin-top:6px;
+  font-variant-numeric:tabular-nums
+}
+.actions {
+  display:grid;
+  gap:12px;
+  margin-top:25px
+}
+.button {
+  border:0;
+  border-radius:999px;
+  padding:16px 20px;
+  min-height:58px;
+  font:inherit;
+  font-size:1.12rem;
+  font-weight:800;
+  cursor:pointer;
+  touch-action:manipulation
+}
+.button:focus-visible {
+  outline:4px solid #79546f;
+  outline-offset:3px
+}
+.primary {
+  background:#d86690;
+  color:#fff;
+  box-shadow:0 5px 0 #ab456c
+}
+.primary:active {
+  transform:translateY(3px);
+  box-shadow:0 2px 0 #ab456c
+}
+.secondary {
+  background:#f7e8ee;
+  color:#743c54
+}
+.safety {
+  line-height:1.7;
+  font-size:.91rem;
+  color:#715f68;
+  margin:24px 0 0
+}
+.workout-head {
+  text-align:center
+}
+.instruction {
+  min-height:3.3em;
+  margin:7px 0 0;
+  font-size:1.08rem;
+  line-height:1.55
+}
+.stage {
+  height:clamp(245px,53vw,355px);
+  position:relative;
+  overflow:hidden;
+  background:radial-gradient(circle at 50% 50%,#fff9fb 15%,#fdeaf0 100%);
+  border-radius:26px;
+  margin:12px 0
+}
+.pet {
+  height:100%;
+  width:100%;
+  max-width:430px;
+  margin:auto
+}
+.direction {
+  position:absolute;
+  bottom:12px;
+  left:0;
+  right:0;
+  text-align:center;
+  font-weight:800;
+  color:#8c4b69;
+  font-size:1.05rem
+}
+.countdown {
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background:#fff9f2de;
+  color:#803f5d;
+  font-weight:800;
+  font-size:1.5rem
+}
+.countdown strong {
+  font-size:5rem;
+  line-height:1.1
+}
+.time-row {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-size:1.1rem
+}
+.time-row strong {
+  font-size:2.4rem;
+  font-variant-numeric:tabular-nums
+}
+.progress-track {
+  height:16px;
+  border-radius:20px;
+  background:#f5e5eb;
+  overflow:hidden;
+  margin:10px 0
+}
+#progress-fill {
+  height:100%;
+  width:0;
+  background:#d86690;
+  border-radius:20px
+}
+.next {
+  margin:12px 0 18px;
+  color:#69545e
+}
+.workout-actions {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px
+}
+.compact {
+  margin-top:20px
+}
+.finish-mark {
+  text-align:center;
+  font-size:4rem;
+  color:#d86690
+}
+.stat-grid {
+  margin:24px 0
+}
+.records-grid {
+  grid-template-columns:repeat(2,1fr)
+}
+.calendar {
+  display:grid;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:5px
+}
+.calendar>* {
+  text-align:center;
+  min-width:0
+}
+.weekday {
+  font-size:.8rem;
+  color:#715f68
+}
+.day {
+  border:1px solid #f1dfe5;
+  border-radius:11px;
+  min-height:56px;
+  padding:6px 1px;
+  background:#fff
+}
+.day.done {
+  background:#fce1eb;
+  border-color:#eaaec3
+}
+.day strong {
+  display:block
+}
+.day small {
+  font-size:.68rem;
+  line-height:1.1
+}
+.history-day {
+  border-top:1px solid #f1dfe5;
+  padding:12px 0
+}
+.history-day h4 {
+  margin:0 0 5px;
+  font-size:1rem
+}
+.history-day ul {
+  margin:0;
+  padding-left:1.4em;
+  line-height:1.7
+}
+.data-note {
+  font-size:.83rem;
+  color:#715f68;
+  line-height:1.6
+}
+#records-home {
+  width:100%;
+  margin-top:12px
+}
+@media(max-width:480px) {
+  .app {
+    padding:8px 8px 30px
+  }
+  .screen {
+    padding:20px 16px;
+    border-radius:22px
+  }
+  .stage {
+    height:295px
+  }
+  .workout-actions {
+    grid-template-columns:1fr 1fr
+  }
+  .button {
+    font-size:1rem;
+    padding:12px 10px
+  }
+  .day {
+    min-height:50px
+  }
+  .day small {
+    font-size:.59rem
+  }
+}
+@media(prefers-reduced-motion:reduce) {
+  .button {
+    scroll-behavior:auto
+  }
+}
 
